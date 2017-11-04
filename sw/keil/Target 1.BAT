@@ -1,0 +1,30 @@
+SET PATH=d:\Keil_v5\ARM\ARMCC\Bin;C:\MentorGraphics\9.5PADS\SDD_HOME\common\win32\bin;C:\MentorGraphics\9.5PADS\SDD_HOME\common\win32\lib;C:\MentorGraphics\9.5PADS\MGC_HOME.ixn\bin;C:\MentorGraphics\9.5PADS\MGC_HOME.ixn\lib;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v1.0\;C:\Program Files (x86)\Windows Kits\8.0\Windows Performance Toolkit\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\
+SET CPU_TYPE=M058ZDN
+SET CPU_VENDOR=Nuvoton
+SET UV2_TARGET=Target 1
+SET CPU_CLOCK=0x00B71B00
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\system_m051series.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmAsm" --Via ".\objects\startup_m051series._ia"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\uart_printf.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\main.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\systime.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\mygpio.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\mepwm.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\protocol.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\interrupt.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\sysinit.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\dataflash.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\smartservo.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\mp9960.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\retarget.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\sys.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\uart.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\i2c.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\timer.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\clk.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\gpio.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\fmc.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\pwm.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmCC" --Via ".\objects\spi.__i"
+"d:\Keil_v5\ARM\ARMCC\Bin\ArmLink" --Via ".\Objects\Neuron1.lnp"
+"d:\Keil_v5\ARM\ARMCC\Bin\fromelf.exe" ".\Objects\Neuron1.bin" --i32combined --output ".\Objects\Neuron1.hex"

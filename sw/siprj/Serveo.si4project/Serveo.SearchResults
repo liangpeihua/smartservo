@@ -1,0 +1,3 @@
+---- rgb_init Matches (2 in 2 files) ----
+main in main.c (E:\smartservo\sw\src) :  	rgb_init();
+rgb.h (E:\smartservo\sw\inc) line 10 : void rgb_init(void);

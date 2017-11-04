@@ -1,0 +1,11 @@
+SmartServo_MP6515_V13_M051/keil/Objects/SmartServo_FW.sct
+*.lnp
+*.htm
+*.iex
+SmartServo_MP6515_V13_M051/keil/Objects/
+SmartServo_MP6515_V13_M051/keil/Listings/SmartServo_M051_14_Volt_ZW.map
+SmartServo_MP6515_V13_M051/keil/Listings/SmartServo_FW.map
+SmartServo_MP6528_V14_M051/keil/Objects/
+SmartServo_MP6528_V14/keil/Objects/
+bootloader/SmartServo_M051_MP6528_bootloader/keil/OBJ/
+bootloader/SmartServo_M051_MP6515_bootloader/keil/OBJ/
