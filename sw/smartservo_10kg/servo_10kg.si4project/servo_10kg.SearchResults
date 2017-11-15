@@ -1,0 +1,16 @@
+---- s_driver_pwm Matches (14 in 2 files) ----
+
+servo_driver.c (src\servo) line 11 : int16_t s_driver_pwm = 0;
+servodriver_set_pwm in servo_driver.c (src\servo) : 	if(set_pwm > s_driver_pwm+(MAX_OUTPUT_PWM/25))
+servodriver_set_pwm in servo_driver.c (src\servo) : 		s_driver_pwm += (MAX_OUTPUT_PWM/25); 
+servodriver_set_pwm in servo_driver.c (src\servo) : 	else if(set_pwm < s_driver_pwm-(MAX_OUTPUT_PWM/25))
+servodriver_set_pwm in servo_driver.c (src\servo) : 		s_driver_pwm -= (MAX_OUTPUT_PWM/25);
+servodriver_set_pwm in servo_driver.c (src\servo) : 		s_driver_pwm = set_pwm;
+servodriver_set_pwm in servo_driver.c (src\servo) :   if(s_driver_pwm > 0)//cw
+servodriver_set_pwm in servo_driver.c (src\servo) : 			pwm_write(SMART_SERVO_PWMA,s_driver_pwm,0,MAX_OUTPUT_PWM);
+servodriver_set_pwm in servo_driver.c (src\servo) : 			pwm_write(SMART_SERVO_ENBL,s_driver_pwm,0,MAX_OUTPUT_PWM);
+servodriver_set_pwm in servo_driver.c (src\servo) : 		pwm_write(SMART_SERVO_PWMB,-s_driver_pwm,0,MAX_OUTPUT_PWM);
+servodriver_set_pwm in servo_driver.c (src\servo) : 		pwm_write(SMART_SERVO_ENBL,-s_driver_pwm,0,MAX_OUTPUT_PWM);
+servodriver_run_idle in servo_driver.c (src\servo) :   s_driver_pwm = 0;
+USART_SendPackage in usart_fun.C (src\servo) : 	extern int16_t s_driver_pwm;
+USART_SendPackage in usart_fun.C (src\servo) : 	*(int16_t*)&buff[0] = s_driver_pwm;//g_servo_info.voltage;

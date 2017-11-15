@@ -1,0 +1,12 @@
+---- g_servo_info.current Matches (11 in 5 files) ----
+smart_servo_cmd_process in protocol.c (src) :       send_smart_current(g_servo_info.current);
+send_sensor_report in protocol.c (src) :             (abs_user(pre_smart_servo_current_val - g_servo_info.current) > 10)) ||
+send_sensor_report in protocol.c (src) :           pre_smart_servo_current_val = g_servo_info.current;
+send_sensor_report in protocol.c (src) :           send_smart_current(g_servo_info.current);
+cmd_get_servo_current in protocol.c (src) :   uart0_printf("G%d M8 I%.2f\r\n",device_id,g_servo_info.current);
+servodet_voltage_handle in servo_detect.c (src\servo) : 	if(g_servo_info.current > 0){
+servodet_voltage_handle in servo_detect.c (src\servo) : 		cur_value = cur_value + (uint32_t)(g_servo_info.current* 1100/1000);//800mΩ
+servodet_overcurrent_handle in servo_detect.c (src\servo) : 	g_servo_info.current = 	tempvalue[index];  
+{anonSERVO_DETECT} in servo_detect.h (src\servo) : 	int32_t current;	    //总电流,mA
+servodriver_set_pwm in servo_driver.c (src\servo) :   set_pwm = limitcurrent_handle(g_servo_info.current, g_servo_info.limit_current, pwm);
+USART_SendPackage in usart_fun.C (src\servo) : 	*(int16_t*)&buff[2] = g_servo_info.current;
