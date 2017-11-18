@@ -10,12 +10,10 @@
 #include "usart_fun.h"
 
 
-
 //GPIO define
 #define SMART_SERVO_TEMP_AD   	P1_3
 #define SMART_SERVO_VOL_AD    	P1_5
 #define SMART_SERVO_CURR_AD   	P1_4
-
 
 //故障ID
 #define NONE_ERROR                   0
@@ -28,11 +26,11 @@
 #define OVER_LOADMAN_ERR            (1<<7)//过载报警
 
 //监测阈值
-#define SHORT_CURRENT_THSD			    			3000			//1mA,驱动芯片短路保护阈值
+#define SHORT_CURRENT_THSD			    			5000			//1mA,驱动芯片短路保护阈值
 #define CURR_HYSTERESIS_THSD            	200         //100mA,滞回电流
 
 #define OVER_TEMPERATURE_THSD		    		70		    	//°C,mos管过温保护阈值
-#define TEMPERATURE_HYSTERESIS_THSD    	10          //10°C，滞回温度
+#define TEMPERATURE_HYSTERESIS_THSD    	20          //20°C，滞回温度
 
 //static STRUCT_PID current_ctrl = {0};
 SERVO_DETECT g_servo_info = {FALSE,0};
@@ -44,8 +42,6 @@ void servodet_init(void)
 	delay(20);
 	g_servo_info.current_zero_offset = analogRead(SMART_SERVO_CURR_AD);
 	g_servo_info.angle_zero_offset = (int16_t)flash_read_angle_offset();
-	g_servo_info.errorid |= OVER_TEMPERATURE_ERR; 
-	g_servo_info.temperature = 25;
 }
 
 SpiFlashOpResult servodet_set_angle_zero(void)
@@ -67,7 +63,6 @@ SpiFlashOpResult servodet_set_angle_zero(void)
 
   return result;
 }
-
 
 static void servodet_pos_handle(void)
 {
@@ -139,9 +134,9 @@ static void servodet_voltage_handle(void)
 
   cur_value = analogRead(SMART_SERVO_VOL_AD);
 	
-	cur_value = cur_value * 349 / 100;   //voltage_temp = value*(3.3/4096)*(130/30)
+	cur_value = cur_value * 349 / 100 + 150;   //voltage_temp = value*(3.3/4096)*(130/30),error=150mv
 	if(g_servo_info.current > 0){
-		cur_value = cur_value + (uint32_t)(g_servo_info.current* 1100/1000);//800mΩ
+		cur_value = cur_value + (uint32_t)(g_servo_info.current* 500/1000);//500mΩ
 	}
 	else{
 		cur_value = cur_value;
@@ -188,6 +183,7 @@ static void servodet_temperature_handle(void)
 	if(first_run)
 	{
 		value = cur_value;
+		g_servo_info.errorid |= OVER_TEMPERATURE_ERR; 
 		first_run = false;
 	}
 	
@@ -201,8 +197,8 @@ static void servodet_temperature_handle(void)
 	{
 		g_servo_info.errorid &= ~(OVER_TEMPERATURE_ERR);
 	}
-
-	g_servo_info.temperature = value;
+	
+	g_servo_info.temperature = constrain(value, 10, OVER_TEMPERATURE_THSD);
 }
 
 static void servodet_overcurrent_handle(void)
@@ -214,7 +210,6 @@ static void servodet_overcurrent_handle(void)
 	int32_t value;
 
 	tempvalue[index] =	analogRead(SMART_SERVO_CURR_AD);
-	g_servo_info.current = 	tempvalue[index];  
 
 	sum += tempvalue[index];
 	value = (sum / 8); 
@@ -222,15 +217,15 @@ static void servodet_overcurrent_handle(void)
 	index %= 8;
 	sum -= tempvalue[index];
 
-	//1V -> 1A, voltage = ADC*(3.3/4096)
-	value = (int32_t)(value - g_servo_info.current_zero_offset)*3300/4096;
+	//1V -> 1A, voltage = ADC*(3.3/4096)，amp=75
+	value = (int32_t)(value - g_servo_info.current_zero_offset)*3300/4096 / 0.375;
 		
 	if(abs_user(value) > SHORT_CURRENT_THSD)
 	{
 		over_count++;
-		if(over_count>16)
+		if(over_count > 20)//0.2s
 		{
-			over_count = 16;
+			over_count = 20;
 	  	g_servo_info.errorid |= OVER_CURRENT_ERR;
 		} 		 
 	}
@@ -243,42 +238,39 @@ static void servodet_overcurrent_handle(void)
 		}
 	}
 
-//	g_servo_info.current = value;  
+	g_servo_info.current = value;  
 }
 
 static void servodet_limitcurrent_handle(void)
 {
-#define LIMIT_MAX_VOLTAGE		8000		
-	static uint16_t error_count = 0;
+#define LIMIT_MAX_VOLTAGE		7400		
 	int32_t limit_current;
+	int32_t limit_current_7_4v;
 	int32_t limit_pwm;
-	int32_t value;
 
-	//电压7.4V测试：
-	//y = -0.0102x3 + 1.7405x2 - 99.922x + 2503.6
-	//max_current(7.4V) = 0.0009*temp^4 - 0.1878*temp^3 + 15.253*temp^2 - 548.33*temp^ + 7974.3, 单位mA
-	//max_current(voltage V) = voltage * max_current(7.4V) / 7.4V, 单位mA
-	limit_current = (-0.0102*pow(g_servo_info.temperature,3) + 
-										1.7405*pow(g_servo_info.temperature,2) - \
-										99.922*g_servo_info.temperature + \
-										2503.6);
+	//电压7.4V测试：堵转电流和温度的关系
+	//y = -17.353x + 4161.6
+	//max_current(7.4V) = -17.353*temp + 4161.6, 单位mA
+	limit_current_7_4v =  -17.353*g_servo_info.temperature + 4161.6;
+	limit_current_7_4v -= 500;
 
 	if(g_servo_info.voltage < LIMIT_MAX_VOLTAGE)
 	{
 		limit_pwm = MAX_OUTPUT_PWM; 
-			
-		limit_current = (g_servo_info.voltage * limit_current) / 7250;//7.4V
-		limit_current -= 0;
+
+		//max_current(voltage) = voltage * max_current(7.4V) / 7.4V, 单位mA
+		limit_current = (g_servo_info.voltage * limit_current_7_4v) / 7400;
 	}
 	else
 	{
 		//当电压大于8V时，保持输出转速和功率不变，减低PWM占空比，为了保护舵机寿命
 		limit_pwm = LIMIT_MAX_VOLTAGE * MAX_OUTPUT_PWM / g_servo_info.voltage; //8v -> max output
 
+		//max_current(voltage) = voltage * max_current(7.4V) / 7.4V, 单位mA
+		limit_current = (LIMIT_MAX_VOLTAGE * limit_current_7_4v) / 7400;
+	
 		//功率守恒
 		//Ix = LIMIT_MAX_VOLTAGE * I_8V / Ux
-		limit_current = (LIMIT_MAX_VOLTAGE * limit_current) / 7250;//7.4V
-		limit_current -= 0;
 		limit_current = LIMIT_MAX_VOLTAGE * limit_current / g_servo_info.voltage;
 	}
 	
@@ -287,24 +279,6 @@ static void servodet_limitcurrent_handle(void)
 	
 	limit_current = constrain(limit_current, 200, SHORT_CURRENT_THSD);
 	g_servo_info.limit_current = limit_current;
-
-	if(abs_user(value) > g_servo_info.limit_current)
-	{
-		error_count++;
-		if(error_count>200)//2s
-		{
-	    error_count = 200;
-	   // g_servo_info.errorid |= OVER_CURRENT_ERR;
-		}      
-	}
-	else
-	{
-		error_count = 0;
-		if(value < (g_servo_info.limit_current-CURR_HYSTERESIS_THSD))
-		{
-		 // g_servo_info.errorid &= ~(OVER_CURRENT_ERR);
-		}
-	}
 }
 
 static void servodet_nfault_handle(void)
@@ -341,21 +315,15 @@ static void servodet_stall_handle(void)
 	static uint16_t stall_count = 0;
 	static int32_t pre_pos = 0;
 
-	if(g_eSysMotionStatus != IDLE_MODE)
+	if( ((g_eSysMotionStatus==SPEED_MODE) && (g_servo_info.tar_speed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ||
+			((g_eSysMotionStatus==PWM_MODE) && (g_servo_info.tar_pwm!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) || 
+			((g_eSysMotionStatus==POS_MODE) && (g_servo_info.posmode_tarspeed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ||
+			((g_eSysMotionStatus==TORQUE_MODE) && (g_servo_info.posmode_tarspeed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) )
 	{
-		if( ((abs_user(g_servo_info.tar_pos-g_servo_info.cur_pos) > 50) && (abs_user(g_servo_info.cur_speed) == 0)) ||
-				(abs_user(pre_pos-g_servo_info.cur_pos) < 20) )
+		stall_count++;
+		if(stall_count > 150)//1.5s
 		{
-			stall_count++;
-			if(stall_count > 150)//1.5s
-			{
-				 //g_servo_info.errorid |= MOTOR_STALL_ERR;
-			}
-		}
-		else
-		{
-			stall_count = 0;
-			pre_pos = g_servo_info.cur_pos;
+			 g_servo_info.errorid |= MOTOR_STALL_ERR;
 		}
 	}
 	else

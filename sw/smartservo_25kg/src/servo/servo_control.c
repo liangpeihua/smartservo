@@ -2,6 +2,7 @@
 #include "servo_driver.h"
 #include "servo_detect.h"
 #include "systime.h"
+#include "sysinit.h"
 #include "uart_printf.h"
 #include "math.h"
 #include "mp9960.h"
@@ -16,6 +17,7 @@
 
 STRUCT_PID speed_ctrl = {0};
 STRUCT_PID pos_ctrl = {0};
+STRUCT_PID torque_ctrl = {0};
 int32_t s_output_pwm = 0;
 
 //运动控制状态
@@ -114,7 +116,106 @@ static void motor_pos_mode(void)
 	
 	//y = A - k*(B-x)^2，一元二次方程
 	int32_t A;//最大目标速度
-	int32_t	B;//减速临界角
+	int32_t B;//减速临界角
+	float K;//系数
+
+	if(s_bMotionStatusChanged)
+	{
+		speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
+		speed_ctrl.output = 0;
+		speed_ctrl.Kp = 200;
+		speed_ctrl.Ki = 20;
+		
+		pos_ctrl.output = 0;
+		pos_ctrl.Kp = 1;
+		pos_ctrl.Kd = 2;
+
+		break_speed = g_servo_info.tar_speed;
+		pre_tar_pos = g_servo_info.tar_pos;
+	}
+
+	if(g_servo_info.errorid != 0)
+	{
+		g_eSysMotionStatus = ERROR_MODE;
+		return;
+	}
+
+	//pos pid
+	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
+	//LIMIT_DEATH(pos_error, 10);
+	if(pre_tar_pos != g_servo_info.tar_pos)
+	{
+		pos_ctrl.Kp = 1;
+		pos_ctrl.Kd = 2;
+		pre_tar_pos = g_servo_info.tar_pos;
+	}
+	else if(abs_user(pos_error) < 10)
+	{
+		pos_ctrl.Kp = 10;
+		pos_ctrl.Kd = 20;
+	}
+	pos_error = constrain(pos_error,-20,20);
+	pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
+	pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+	pos_ctrl.last_error = pos_error;
+	
+	//speed pid
+	A = abs_user(g_servo_info.tar_speed);//最大目标速度
+	B = 5*abs_user(break_speed)+10;//减速临界角
+	K = 0.01;//系数
+	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
+	LIMIT_DEATH(pos_error, 10);
+	abspos_error = abs_user(pos_error);
+	if(abspos_error == 0)
+	{
+		target_speed = 0;
+	}
+	else if(abspos_error < B)
+	{
+		target_speed = A - K*pow((B - abspos_error),2);// //y = A - K*(B-x)^2，一元二次方程
+		if(target_speed < 1){
+			target_speed = 1;
+		}
+	}
+	else
+	{
+		target_speed = abs_user(g_servo_info.tar_speed);
+		break_speed = (abs_user(g_servo_info.tar_speed)*5 + abs_user(g_servo_info.cur_speed)*5) /10;//waring
+	}
+	
+	target_speed = constrain(target_speed,0,abs_user(g_servo_info.tar_speed));
+	if(pos_error > 0){
+		target_speed= abs_user(target_speed);
+	}
+	else{
+		target_speed= -abs_user(target_speed);
+	}
+	speed_error = target_speed - g_servo_info.cur_speed;
+	speed_error = constrain(speed_error,-20,20);
+	speed_ctrl.integral += speed_error;
+	speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.
+limit_pwm/speed_ctrl.Ki));
+	speed_ctrl.output = (speed_ctrl.Kp * speed_error + speed_ctrl.Ki * speed_ctrl.integral) / 10;
+	speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+
+	s_output_pwm = pos_ctrl.output + speed_ctrl.output;
+	s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+	servodriver_set_pwm(s_output_pwm);
+}
+
+
+static void  motor_torque_mode(void)
+{
+	int32_t speed_error;
+	int32_t pos_error;
+	int32_t abspos_error;
+	int32_t target_speed;
+	static int32_t break_speed = 0;
+	static int32_t pre_tar_pos = 0;
+	
+	//y = A - k*(B-x)^2，一元二次方程
+	int32_t A;//最大目标速度
+	int32_t B;//减速临界角
 	float K;//系数
 
 	if(s_bMotionStatusChanged)
@@ -170,7 +271,7 @@ static void motor_pos_mode(void)
 	}
 	else if(abspos_error < B)
 	{
-		target_speed = A - K*pow((B - abspos_error),2);//	//y = A - K*(B-x)^2，一元二次方程
+		target_speed = A - K*pow((B - abspos_error),2);// //y = A - K*(B-x)^2，一元二次方程
 		if(target_speed < 1){
 			target_speed = 1;
 		}
@@ -199,6 +300,7 @@ static void motor_pos_mode(void)
 	s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
 	servodriver_set_pwm(s_output_pwm);
 }
+
 
 static void motor_error_mode(void)
 {
@@ -325,6 +427,10 @@ void motor_process(void)
       motor_pos_mode();
       break;
 
+    case TORQUE_MODE:
+    	motor_torque_mode();
+			break;
+			
     case ERROR_MODE:
       motor_error_mode();
       break;
