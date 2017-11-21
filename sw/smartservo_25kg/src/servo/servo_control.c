@@ -9,11 +9,9 @@
 #include "protocol.h"
 #include "main.h"
 #include "usart_Fun.h"
-
-
+	
 #define MAX_SPEED      		38	//1rpm/min,实测最大转速
 #define _PWM(Speed)		      ((Speed) * MAX_OUTPUT_PWM / MAX_SPEED)	//拟合pwm
-			
 
 STRUCT_PID speed_ctrl = {0};
 STRUCT_PID pos_ctrl = {0};
@@ -111,13 +109,10 @@ static void motor_pos_mode(void)
 	int32_t pos_error;
 	int32_t abspos_error;
 	int32_t target_speed;
-	static int32_t break_speed = 0;
 	static int32_t pre_tar_pos = 0;
-	
-	//y = A - k*(B-x)^2，一元二次方程
-	int32_t A;//最大目标速度
-	int32_t B;//减速临界角
-	float K;//系数
+	float A;
+	int32_t H;
+	int32_t K;
 
 	if(s_bMotionStatusChanged)
 	{
@@ -130,7 +125,6 @@ static void motor_pos_mode(void)
 		pos_ctrl.Kp = 1;
 		pos_ctrl.Kd = 2;
 
-		break_speed = g_servo_info.tar_speed;
 		pre_tar_pos = g_servo_info.tar_pos;
 	}
 
@@ -140,9 +134,6 @@ static void motor_pos_mode(void)
 		return;
 	}
 
-	//pos pid
-	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-	//LIMIT_DEATH(pos_error, 10);
 	if(pre_tar_pos != g_servo_info.tar_pos)
 	{
 		pos_ctrl.Kp = 1;
@@ -154,15 +145,18 @@ static void motor_pos_mode(void)
 		pos_ctrl.Kp = 10;
 		pos_ctrl.Kd = 20;
 	}
+
+	//pos pid
+	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
 	pos_error = constrain(pos_error,-20,20);
 	pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
 	pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
 	pos_ctrl.last_error = pos_error;
 	
 	//speed pid
-	A = abs_user(g_servo_info.tar_speed);//最大目标速度
-	B = 5*abs_user(break_speed)+10;//减速临界角
-	K = 0.01;//系数
+	H = 600;//最大减速临界角
+	K = 50;//最大目标速度
+	A = -50.0 / pow(H,2);//系数，带入坐标点(0, 0)
 	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
 	LIMIT_DEATH(pos_error, 10);
 	abspos_error = abs_user(pos_error);
@@ -170,9 +164,9 @@ static void motor_pos_mode(void)
 	{
 		target_speed = 0;
 	}
-	else if(abspos_error < B)
+	else if(abspos_error < H)
 	{
-		target_speed = A - K*pow((B - abspos_error),2);// //y = A - K*(B-x)^2，一元二次方程
+		target_speed = A*pow((abspos_error - H),2) + K;//二次函数，顶点式：y=a(x-h)²+k(a≠0）
 		if(target_speed < 1){
 			target_speed = 1;
 		}
@@ -180,10 +174,10 @@ static void motor_pos_mode(void)
 	else
 	{
 		target_speed = abs_user(g_servo_info.tar_speed);
-		break_speed = (abs_user(g_servo_info.tar_speed)*5 + abs_user(g_servo_info.cur_speed)*5) /10;//waring
 	}
 	
 	target_speed = constrain(target_speed,0,abs_user(g_servo_info.tar_speed));
+	g_servo_info.posmode_tarspeed = target_speed;
 	if(pos_error > 0){
 		target_speed= abs_user(target_speed);
 	}
@@ -193,8 +187,7 @@ static void motor_pos_mode(void)
 	speed_error = target_speed - g_servo_info.cur_speed;
 	speed_error = constrain(speed_error,-20,20);
 	speed_ctrl.integral += speed_error;
-	speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.
-limit_pwm/speed_ctrl.Ki));
+	speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.limit_pwm/speed_ctrl.Ki));
 	speed_ctrl.output = (speed_ctrl.Kp * speed_error + speed_ctrl.Ki * speed_ctrl.integral) / 10;
 	speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
 

@@ -26,7 +26,7 @@
 #define OVER_LOADMAN_ERR            (1<<7)//过载报警
 
 //监测阈值
-#define SHORT_CURRENT_THSD			    			5000			//1mA,驱动芯片短路保护阈值
+#define SHORT_CURRENT_THSD			    			3000			//1mA,驱动芯片短路保护阈值
 #define CURR_HYSTERESIS_THSD            	200         //100mA,滞回电流
 
 #define OVER_TEMPERATURE_THSD		    		70		    	//°C,mos管过温保护阈值
@@ -223,7 +223,7 @@ static void servodet_overcurrent_handle(void)
 	if(abs_user(value) > SHORT_CURRENT_THSD)
 	{
 		over_count++;
-		if(over_count > 20)//0.2s
+		if(over_count > 50)//0.5s
 		{
 			over_count = 20;
 	  	g_servo_info.errorid |= OVER_CURRENT_ERR;
@@ -252,8 +252,7 @@ static void servodet_limitcurrent_handle(void)
 	//y = -17.353x + 4161.6
 	//max_current(7.4V) = -17.353*temp + 4161.6, 单位mA
 	limit_current_7_4v =  -17.353*g_servo_info.temperature + 4161.6;
-	limit_current_7_4v -= 500;
-
+	
 	if(g_servo_info.voltage < LIMIT_MAX_VOLTAGE)
 	{
 		limit_pwm = MAX_OUTPUT_PWM; 
@@ -276,8 +275,9 @@ static void servodet_limitcurrent_handle(void)
 	
 	limit_pwm = constrain(limit_pwm, 0, MAX_OUTPUT_PWM);
 	g_servo_info.limit_pwm = limit_pwm;
-	
-	limit_current = constrain(limit_current, 200, SHORT_CURRENT_THSD);
+
+	limit_current -= 1500;
+	limit_current = constrain(limit_current, 500, SHORT_CURRENT_THSD);
 	g_servo_info.limit_current = limit_current;
 }
 
