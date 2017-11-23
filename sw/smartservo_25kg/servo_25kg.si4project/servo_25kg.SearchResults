@@ -1,5 +1,4 @@
----- servodriver_run_pwm Matches (4 in 3 files) ----
-smart_servo_cmd_process in protocol.c (src) :       servodriver_run_pwm((int16_t)speed_pwm);
-cmd_set_pwm_motion in protocol.c (src) :   servodriver_run_pwm(speed);
-servo_driver.c (src\servo) line 126 : void servodriver_run_pwm(int16_t pwm)
-servo_driver.h (src\servo) line 49 : void servodriver_run_pwm(int16_t pwm);
+---- limit_pwm Matches (3 in 3 files) ----
+main.c (src) line 55 : uint16_t limit_pwm;
+main.h (inc) line 22 : extern uint16_t limit_pwm;
+smart_servo_cmd_process in protocol.c (src) :       speed_pwm = map(speed_pwm, 0, limit_pwm, 0, 50);

@@ -22,7 +22,7 @@ typedef struct
 	int32_t tar_torque;
 	int32_t angle_zero_offset;
 	int32_t current_zero_offset;
-	uint32_t temperature;
+	int32_t temperature;
 	int32_t limit_pwm;
 	int32_t limit_current;
 	uint32_t errorid;

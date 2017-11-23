@@ -31,9 +31,9 @@
 typedef enum
 {
     IDLE_MODE = 0,	
+    PWM_MODE,
     SPEED_MODE,		   
     POS_MODE,
-    PWM_MODE,
     TORQUE_MODE,  
     ERROR_MODE,		       
     DEBUG_MODE, //6
@@ -50,6 +50,8 @@ void servodriver_run_pwm(int16_t pwm);
 void servodriver_run_torque(int32_t angle,float speed,int32_t torque);
 void servodriver_run_error(void);
 void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t param3);
+int16_t servodriver_getpwmvalue(void);
+
 
 
 extern MOTOR_CTRL_STATUS g_eSysMotionStatus;  

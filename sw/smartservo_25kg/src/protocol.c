@@ -724,7 +724,7 @@ static void smart_servo_cmd_process(void *arg)
     {
       speed_pwm = readShort(sysex.val.value,1,false);
       speed_pwm = constrain((float)speed_pwm,-255,255);
-      speed_pwm = map(speed_pwm, 0, limit_pwm, 0, 50);
+      speed_pwm = map(speed_pwm, 0, 255, 0,MAX_OUTPUT_PWM);
       servodriver_run_pwm((int16_t)speed_pwm);
       SendErrorUart0(PROCESS_SUC);
       break;
@@ -1532,6 +1532,7 @@ static void cmd_set_pwm_motion(char *cmd)
   }
 
   speed = constrain(speed,-255,255);
+  speed = map(speed, 0, 255, 0,MAX_OUTPUT_PWM);
   servodriver_run_pwm(speed);
   SendErrorUart0(PROCESS_SUC);
 }

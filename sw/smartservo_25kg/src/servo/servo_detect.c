@@ -251,32 +251,32 @@ static void servodet_limitcurrent_handle(void)
 	//电压7.4V测试：堵转电流和温度的关系
 	//y = -17.353x + 4161.6
 	//max_current(7.4V) = -17.353*temp + 4161.6, 单位mA
-	limit_current_7_4v =  -17.353*g_servo_info.temperature + 4161.6;
+	limit_current_7_4v =  (int32_t)(-35*g_servo_info.temperature + 4000);
 	
 	if(g_servo_info.voltage < LIMIT_MAX_VOLTAGE)
 	{
 		limit_pwm = MAX_OUTPUT_PWM; 
 
 		//max_current(voltage) = voltage * max_current(7.4V) / 7.4V, 单位mA
-		limit_current = (g_servo_info.voltage * limit_current_7_4v) / 7400;
+		limit_current = (int32_t)(g_servo_info.voltage * limit_current_7_4v) / 7400;
 	}
 	else
 	{
 		//当电压大于8V时，保持输出转速和功率不变，减低PWM占空比，为了保护舵机寿命
-		limit_pwm = LIMIT_MAX_VOLTAGE * MAX_OUTPUT_PWM / g_servo_info.voltage; //8v -> max output
+		limit_pwm = LIMIT_MAX_VOLTAGE * MAX_OUTPUT_PWM / g_servo_info.voltage; //7.4v -> max output
 
 		//max_current(voltage) = voltage * max_current(7.4V) / 7.4V, 单位mA
-		limit_current = (LIMIT_MAX_VOLTAGE * limit_current_7_4v) / 7400;
+		limit_current = (int32_t)(LIMIT_MAX_VOLTAGE * limit_current_7_4v) / 7400;
 	
 		//功率守恒
 		//Ix = LIMIT_MAX_VOLTAGE * I_8V / Ux
-		limit_current = LIMIT_MAX_VOLTAGE * limit_current / g_servo_info.voltage;
+		limit_current = (int32_t)(LIMIT_MAX_VOLTAGE * limit_current / g_servo_info.voltage);
 	}
 	
 	limit_pwm = constrain(limit_pwm, 0, MAX_OUTPUT_PWM);
 	g_servo_info.limit_pwm = limit_pwm;
 
-	limit_current -= 1500;
+	limit_current -= 500;
 	limit_current = constrain(limit_current, 500, SHORT_CURRENT_THSD);
 	g_servo_info.limit_current = limit_current;
 }
@@ -314,11 +314,13 @@ static void servodet_stall_handle(void)
 {
 	static uint16_t stall_count = 0;
 	static int32_t pre_pos = 0;
+	uint16_t cur_pwmvalue = abs_user( servodriver_getpwmvalue() );
 
-	if( ((g_eSysMotionStatus==SPEED_MODE) && (g_servo_info.tar_speed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ||
+	if( (cur_pwmvalue > (MAX_OUTPUT_PWM/5)) &&
+			(((g_eSysMotionStatus==SPEED_MODE) && (g_servo_info.tar_speed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ||
 			((g_eSysMotionStatus==PWM_MODE) && (g_servo_info.tar_pwm!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) || 
 			((g_eSysMotionStatus==POS_MODE) && (g_servo_info.posmode_tarspeed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ||
-			((g_eSysMotionStatus==TORQUE_MODE) && (g_servo_info.posmode_tarspeed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) )
+			((g_eSysMotionStatus==TORQUE_MODE) && (g_servo_info.posmode_tarspeed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ))
 	{
 		stall_count++;
 		if(stall_count > 150)//1.5s

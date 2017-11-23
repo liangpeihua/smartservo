@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define  SUPPORT_MY_DEBUG		1
+#define  SUPPORT_MY_DEBUG		0
 
 #define RX_MAX_SIZE		50
 #define TX_MAX_SIZE		50
@@ -245,18 +245,18 @@ void USART_SendPackage(void)
 	count = 0;
 
 	//speed
-//	*(int16_t*)&buff[0] = g_servo_info.cur_speed;
-//	*(int16_t*)&buff[2] = g_servo_info.cur_pos/10;
-//	*(int16_t*)&buff[4] = g_servo_info.posmode_tarspeed;
-//	*(int16_t*)&buff[6] = g_servo_info.tar_pos/10;
-//	COMSendBuffer(0x00660001, buff, 8);
+	*(int16_t*)&buff[0] = g_servo_info.cur_speed;
+	*(int16_t*)&buff[2] = g_servo_info.cur_pos/10;
+	*(int16_t*)&buff[4] = g_servo_info.posmode_tarspeed;
+	*(int16_t*)&buff[6] = g_servo_info.tar_pos/10;
+	COMSendBuffer(0x00660001, buff, 8);
 
 	//detect
-	*(int16_t*)&buff[0] = g_servo_info.voltage;
-	*(int16_t*)&buff[2] = g_servo_info.current;
-	*(int16_t*)&buff[4] = g_servo_info.temperature;
-	*(int16_t*)&buff[6] = g_servo_info.limit_current;
-	COMSendBuffer(0x00660002, buff, 8);
+//	*(int16_t*)&buff[0] = g_servo_info.voltage;
+//	*(int16_t*)&buff[2] = g_servo_info.current;
+//	*(int16_t*)&buff[4] = g_servo_info.temperature;
+//	*(int16_t*)&buff[6] = g_servo_info.limit_current;
+//	COMSendBuffer(0x00660002, buff, 8);
 
 #endif
 }

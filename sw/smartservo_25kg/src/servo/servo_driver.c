@@ -163,6 +163,12 @@ void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t pa
   }
 }
 
+int16_t servodriver_getpwmvalue(void)
+{
+	return s_driver_pwm;
+}
+
+
 /***********************************************************
 * Function Name : servodriver_limitcurrent
 * Description   : 限流处理

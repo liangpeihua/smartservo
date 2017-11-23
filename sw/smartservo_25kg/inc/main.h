@@ -19,7 +19,6 @@
 //
 //  configuration parameter
 //
-extern uint16_t limit_pwm;
 
 #endif
 

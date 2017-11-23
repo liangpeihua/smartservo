@@ -44,7 +44,7 @@ static void motor_pwm_mode(void)
 
 	if(s_bMotionStatusChanged)
 	{
-		step_len = 10;
+		step_len = 30;
 		s_output_pwm = 0;
 	}
 
@@ -195,7 +195,6 @@ static void motor_pos_mode(void)
 	s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
 	servodriver_set_pwm(s_output_pwm);
 }
-
 
 static void  motor_torque_mode(void)
 {
