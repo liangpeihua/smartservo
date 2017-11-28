@@ -51,6 +51,7 @@ void servodriver_run_torque(int32_t angle,float speed,int32_t torque);
 void servodriver_run_error(void);
 void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t param3);
 int16_t servodriver_getpwmvalue(void);
+int32_t servodriver_limitcurrent(int32_t cur_current, int32_t limit_current,int32_t set_pwm);
 
 
 

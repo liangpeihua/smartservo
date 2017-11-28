@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define  SUPPORT_MY_DEBUG		0
+#define  SUPPORT_MY_DEBUG		1
 
 #define RX_MAX_SIZE		50
 #define TX_MAX_SIZE		50
@@ -190,7 +190,9 @@ void COMSendBuffer(uint32_t id, void *buf, uint32_t bufsize)
 void USART_RecvPackage(uint8_t data)
 {
 #if SUPPORT_MY_DEBUG
-
+	extern STRUCT_PID speed_ctrl;
+	extern STRUCT_PID torque_ctrl;
+	
 	CAN_msg *prxmsg;
 	if(USART_RecFrame(data, &g_ucCOMRxBuf[0], &g_ucRXLen) == true)
 	{ 
@@ -198,12 +200,14 @@ void USART_RecvPackage(uint8_t data)
 
 		switch(prxmsg->id)
 		{
-			case 0x00660001:
-
+			case 0x00660011:
+					speed_ctrl.Kp = prxmsg->data[0];
+					speed_ctrl.Ki = prxmsg->data[1];
 				break;
 			
-			case 0x00660002:
-
+			case 0x00660012:
+				torque_ctrl.Kp = prxmsg->data[0];
+				torque_ctrl.Ki = prxmsg->data[1];
 				break;
 
 			case 0x0066000F:
@@ -238,25 +242,25 @@ void USART_SendPackage(void)
 	static uint32_t count = 0;
 
 	count++;
-	if(count < 1)
+	if(count < 10)
 	{
 		return;
 	}
 	count = 0;
 
 	//speed
-	*(int16_t*)&buff[0] = g_servo_info.cur_speed;
-	*(int16_t*)&buff[2] = g_servo_info.cur_pos/10;
-	*(int16_t*)&buff[4] = g_servo_info.tar_speed;//g_servo_info.posmode_tarspeed;
-	*(int16_t*)&buff[6] = g_servo_info.tar_pos/10;
-	COMSendBuffer(0x00660001, buff, 8);
+//	*(int16_t*)&buff[0] = g_servo_info.cur_speed;
+//	*(int16_t*)&buff[2] = g_servo_info.cur_pos/10;
+//	*(int16_t*)&buff[4] = g_servo_info.posmode_tarspeed;
+//	*(int16_t*)&buff[6] = g_servo_info.tar_pos/10;
+//	COMSendBuffer(0x00660001, buff, 8);
 
 	//detect
-//	*(int16_t*)&buff[0] = g_servo_info.voltage;
-//	*(int16_t*)&buff[2] = g_servo_info.current;
-//	*(int16_t*)&buff[4] = g_servo_info.temperature;
-//	*(int16_t*)&buff[6] = g_servo_info.limit_current;
-//	COMSendBuffer(0x00660002, buff, 8);
+	*(int16_t*)&buff[0] = g_servo_info.voltage;
+	*(int16_t*)&buff[2] = g_servo_info.current;
+	*(int16_t*)&buff[4] = g_servo_info.temperature;
+	*(int16_t*)&buff[6] = g_servo_info.torquemode_tartorque;//g_servo_info.limit_current;
+	COMSendBuffer(0x00660002, buff, 8);
 
 #endif
 }

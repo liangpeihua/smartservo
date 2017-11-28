@@ -1,742 +1,0 @@
-Dependencies for Project 'SmartServo_M051_MP6528', Target 'M051_ZW_Debug': (DO NOT MODIFY !)
-F (..\Library\Device\Nuvoton\M051Series\Source\system_M051Series.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\system_m051series.o --omf_browse .\objects\system_m051series.crf --depend .\objects\system_m051series.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (.\startup_M051Series.s)(0x59C381C4)(--cpu Cortex-M0 -g --apcs=interwork --pd "__MICROLIB SETA 1"-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 520"--list .\listings\startup_m051series.lst --xref -o .\objects\startup_m051series.o --depend .\objects\startup_m051series.d)
-F (..\src\uart_printf.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\uart_printf.o --omf_browse .\objects\uart_printf.crf --depend .\objects\uart_printf.d)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
-I (..\inc\protocol.h)(0x59FC0BF1)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\main.c)(0x5A026CD0)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\protocol.h)(0x59FC0BF1)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\inc\MePwm.h)(0x59C381C4)
-I (..\inc\Interrupt.h)(0x59C381C4)
-I (..\inc\dataflash.h)(0x59C381C4)
-I (..\src\servo\servo_control.h)(0x5A06B0E5)
-I (..\src\servo\servo_driver.h)(0x5A0277E7)
-I (..\src\servo\servo_detect.h)(0x5A06ACDE)
-I (..\inc\rgb.h)(0x5A026CD2)
-I (..\inc\mp9960.h)(0x59C381C4)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\systime.c)(0x59FC0BF1)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\systime.o --omf_browse .\objects\systime.crf --depend .\objects\systime.d)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\mygpio.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\mygpio.o --omf_browse .\objects\mygpio.crf --depend .\objects\mygpio.d)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\MePwm.c)(0x59FFFCBA)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\mepwm.o --omf_browse .\objects\mepwm.crf --depend .\objects\mepwm.d)
-I (..\inc\MePwm.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\protocol.c)(0x5A003A17)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\protocol.o --omf_browse .\objects\protocol.crf --depend .\objects\protocol.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x56FE42E0)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\protocol.h)(0x59FC0BF1)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (..\inc\rgb.h)(0x5A026CD2)
-I (..\inc\MePwm.h)(0x59C381C4)
-I (..\inc\dataflash.h)(0x59C381C4)
-I (..\src\servo\servo_driver.h)(0x5A0277E7)
-I (..\src\servo\servo_detect.h)(0x5A06ACDE)
-I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\inc\mp9960.h)(0x59C381C4)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\Interrupt.c)(0x59FFC6AC)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\interrupt.o --omf_browse .\objects\interrupt.crf --depend .\objects\interrupt.d)
-I (..\inc\Interrupt.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\protocol.h)(0x59FC0BF1)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\sysinit.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\sysinit.o --omf_browse .\objects\sysinit.crf --depend .\objects\sysinit.d)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\dataflash.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\dataflash.o --omf_browse .\objects\dataflash.crf --depend .\objects\dataflash.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\inc\dataflash.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\mp9960.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\mp9960.o --omf_browse .\objects\mp9960.crf --depend .\objects\mp9960.d)
-I (..\inc\mp9960.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
-I (..\inc\Interrupt.h)(0x59C381C4)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\inc\Sysinit.h)(0x59C381C4)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\rgb.c)(0x5A027806)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\rgb.o --omf_browse .\objects\rgb.crf --depend .\objects\rgb.d)
-I (..\inc\rgb.h)(0x5A026CD2)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\MePwm.h)(0x59C381C4)
-I (..\inc\dataflash.h)(0x59C381C4)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
-I (..\inc\mp9960.h)(0x59C381C4)
-I (..\inc\protocol.h)(0x59FC0BF1)
-I (..\inc\main.h)(0x59F97B6A)
-I (..\src\servo\servo_detect.h)(0x5A06ACDE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\src\servo\servo_driver.h)(0x5A0277E7)
-F (..\src\servo\servo_control.c)(0x5A094C56)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\servo_control.o --omf_browse .\objects\servo_control.crf --depend .\objects\servo_control.d)
-I (..\src\servo\servo_control.h)(0x5A06B0E5)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\MePwm.h)(0x59C381C4)
-I (..\inc\dataflash.h)(0x59C381C4)
-I (..\src\servo\servo_driver.h)(0x5A0277E7)
-I (..\src\servo\servo_detect.h)(0x5A06ACDE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
-I (..\inc\mp9960.h)(0x59C381C4)
-I (..\inc\protocol.h)(0x59FC0BF1)
-I (..\inc\main.h)(0x59F97B6A)
-I (..\src\servo\usart_Fun.h)(0x59FBDD4D)
-F (..\src\servo\servo_detect.c)(0x5A06D05F)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\servo_detect.o --omf_browse .\objects\servo_detect.crf --depend .\objects\servo_detect.d)
-I (..\src\servo\servo_detect.h)(0x5A06ACDE)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\MePwm.h)(0x59C381C4)
-I (..\inc\dataflash.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\src\servo\servo_driver.h)(0x5A0277E7)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
-I (..\inc\mp9960.h)(0x59C381C4)
-I (..\inc\protocol.h)(0x59FC0BF1)
-I (..\inc\main.h)(0x59F97B6A)
-I (..\src\servo\usart_fun.h)(0x59FBDD4D)
-F (..\src\servo\servo_driver.c)(0x5A094C22)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\servo_driver.o --omf_browse .\objects\servo_driver.crf --depend .\objects\servo_driver.d)
-I (..\src\servo\servo_driver.h)(0x5A0277E7)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (..\inc\MePwm.h)(0x59C381C4)
-I (..\inc\dataflash.h)(0x59C381C4)
-I (..\src\servo\servo_detect.h)(0x5A06ACDE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\inc\systime.h)(0x59FC0C0B)
-I (..\inc\uart_printf.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
-I (..\inc\mp9960.h)(0x59C381C4)
-I (..\inc\protocol.h)(0x59FC0BF1)
-I (..\inc\main.h)(0x59F97B6A)
-F (..\src\servo\usart_fun.C)(0x5A06D102)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\usart_fun.o --omf_browse .\objects\usart_fun.crf --depend .\objects\usart_fun.d)
-I (..\src\servo\usart_Fun.h)(0x59FBDD4D)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-I (..\inc\sysinit.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x56FE42DE)
-I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x56FE42DE)
-I (..\src\servo\servo_detect.h)(0x5A06ACDE)
-I (..\inc\mygpio.h)(0x59C381C4)
-I (..\inc\MePwm.h)(0x59C381C4)
-I (..\inc\dataflash.h)(0x59C381C4)
-I (..\src\servo\servo_driver.h)(0x5A0277E7)
-I (..\src\servo\servo_control.h)(0x5A06B0E5)
-I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x56FE42D6)
-F (..\inc\uart_printf.h)(0x59C381C4)()
-F (..\inc\systime.h)(0x59FC0C0B)()
-F (..\inc\mygpio.h)(0x59C381C4)()
-F (..\inc\protocol.h)(0x59FC0BF1)()
-F (..\inc\Interrupt.h)(0x59C381C4)()
-F (..\inc\sysinit.h)(0x59C381C4)()
-F (..\inc\dataflash.h)(0x59C381C4)()
-F (..\inc\smartservo.h)(0x00000000)()
-F (..\inc\mp9960.h)(0x59C381C4)()
-F (..\inc\main.h)(0x59F97B6A)()
-F (..\src\servo\servo_control.h)(0x5A06B0E5)()
-F (..\src\servo\servo_detect.h)(0x5A06ACDE)()
-F (..\src\servo\servo_driver.h)(0x5A0277E7)()
-F (..\inc\rgb.h)(0x5A026CD2)()
-F (..\inc\MePwm.h)(0x59C381C4)()
-F (..\Library\StdDriver\src\retarget.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\retarget.o --omf_browse .\objects\retarget.crf --depend .\objects\retarget.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\sys.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\sys.o --omf_browse .\objects\sys.crf --depend .\objects\sys.d)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\uart.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\uart.o --omf_browse .\objects\uart.crf --depend .\objects\uart.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\i2c.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\i2c.o --omf_browse .\objects\i2c.crf --depend .\objects\i2c.d)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\timer.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\timer.o --omf_browse .\objects\timer.crf --depend .\objects\timer.d)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\clk.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\clk.o --omf_browse .\objects\clk.crf --depend .\objects\clk.d)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\gpio.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\gpio.o --omf_browse .\objects\gpio.crf --depend .\objects\gpio.d)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\fmc.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\fmc.o --omf_browse .\objects\fmc.crf --depend .\objects\fmc.d)
-I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x56FE42DE)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\pwm.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\pwm.o --omf_browse .\objects\pwm.crf --depend .\objects\pwm.d)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\Library\StdDriver\src\spi.c)(0x59C381C4)(-c --cpu Cortex-M0 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I ..\Library\CMSIS\Include -I ..\Library\Device\Nuvoton\M051Series\Include -I ..\Library\StdDriver\inc -I ..\inc -I ..\src\servo-I E:\smartservo\sw\smartservo_10kg\keil\RTE-I C:\Keil_v5\ARM\PACK\Nuvoton\NuMicro_DFP\1.0.8\Device\M051\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="520"-o .\objects\spi.o --omf_browse .\objects\spi.crf --depend .\objects\spi.d)
-I (..\Library\Device\Nuvoton\M051Series\Include\M051Series.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cm0.h)(0x59C381C4)
-I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x56FE42DE)
-I (..\Library\CMSIS\Include\core_cmInstr.h)(0x59C381C4)
-I (..\Library\CMSIS\Include\core_cmFunc.h)(0x59C381C4)
-I (..\Library\Device\Nuvoton\M051Series\Include\system_M051Series.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\sys.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\clk.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\adc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\ebi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\fmc.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\gpio.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\i2c.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\pwm.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\spi.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\timer.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\wwdt.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\uart.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\hdiv.h)(0x59C381C4)
-I (..\Library\StdDriver\inc\acmp.h)(0x59C381C4)
-F (..\doc\readme.txt)(0x59C381C4)()

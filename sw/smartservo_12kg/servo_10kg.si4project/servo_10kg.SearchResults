@@ -1,0 +1,4 @@
+---- g_servo_info.limit_current Matches (3 in 3 files) ----
+servodet_limitcurrent_handle in servo_detect.c (src\servo) : 	g_servo_info.limit_current = limit_current;
+servodriver_set_pwm in servo_driver.c (src\servo) :   set_pwm = servodriver_limitcurrent(g_servo_info.current, g_servo_info.limit_current, pwm);
+USART_SendPackage in usart_fun.C (src\servo) : 	*(int16_t*)&buff[6] = g_servo_info.limit_current;

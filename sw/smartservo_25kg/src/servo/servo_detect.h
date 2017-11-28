@@ -19,14 +19,16 @@ typedef struct
 	int32_t tar_speed;				//转速，1RPM/min
 	int32_t tar_pos;					//位置，0.1°
 	int32_t tar_pwm;
-	int32_t tar_torque;
+	int32_t tar_torque;				//0~255
 	int32_t angle_zero_offset;
 	int32_t current_zero_offset;
 	int32_t temperature;
 	int32_t limit_pwm;
 	int32_t limit_current;
 	uint32_t errorid;
-	int32_t posmode_tarspeed;				
+	int32_t posmode_tarspeed;		
+	int32_t torquemode_tartorque;	
+	boolean reach_tar_pos;
 }SERVO_DETECT;
 
 

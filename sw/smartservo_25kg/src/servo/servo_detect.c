@@ -207,10 +207,15 @@ static void servodet_overcurrent_handle(void)
 	static uint8_t index = 0; 
 	static int32_t tempvalue[8] = {0};
 	static int32_t sum = 0;
+	int32_t adc_value;
 	int32_t value;
 
-	tempvalue[index] =	analogRead(SMART_SERVO_CURR_AD);
-
+	adc_value = analogRead(SMART_SERVO_CURR_AD);
+	if(adc_value != 0)
+	{
+		tempvalue[index] = adc_value;
+	}
+	
 	sum += tempvalue[index];
 	value = (sum / 8); 
 	index++;
@@ -218,7 +223,7 @@ static void servodet_overcurrent_handle(void)
 	sum -= tempvalue[index];
 
 	//1V -> 1A, voltage = ADC*(3.3/4096)，amp=75
-	value = (int32_t)(value - g_servo_info.current_zero_offset)*3300/4096 / 0.375;
+	value = (int32_t)abs_user((value - g_servo_info.current_zero_offset)*3300/4096 / 0.375);//0.375
 		
 	if(abs_user(value) > SHORT_CURRENT_THSD)
 	{
@@ -265,8 +270,8 @@ static void servodet_limitcurrent_handle(void)
 		limit_pwm =  LIMIT_MAX_VOLTAGE * MAX_OUTPUT_PWM / g_servo_info.voltage; //7.4v -> max output
 	
 		//功率守恒
-		//Ix = LIMIT_MAX_VOLTAGE * I_8V / Ux
-		limit_current = (int32_t)(LIMIT_MAX_VOLTAGE * limit_current / g_servo_info.voltage);
+		//Ix = LIMIT_MAX_VOLTAGE * I_74V / Ux
+		limit_current = (int32_t)(LIMIT_MAX_VOLTAGE * limit_current_7_4v / g_servo_info.voltage);
 	}
 	
 	limit_pwm = constrain(limit_pwm, 0, MAX_OUTPUT_PWM);
