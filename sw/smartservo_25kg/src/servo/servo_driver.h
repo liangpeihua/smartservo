@@ -25,7 +25,7 @@
 #endif
 
 #define MAX_OUTPUT_PWM		1024
-#define MAX_TAR_SPEED 	 (50)    // ---- 0.16sec/60   (28.57 rpm)    0.200s/60°
+#define MAX_TAR_SPEED 	 (60)    // ---- 0.16sec/60   (28.57 rpm)    0.200s/60°
 #define MAX_TORQUE				255
 
 typedef enum

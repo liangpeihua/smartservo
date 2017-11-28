@@ -47,7 +47,7 @@ volatile uint8_t device_id_2 = 0;              //hardware ID, Uniqueness in a li
 volatile uint8_t device_type = CUSTOM_TYPE;  //device type, Indicates the type of module, 0x00 indicates no external module
 volatile uint8_t command_mode = FIRMATA_DATA_MODE;    //G_CODE_MODE,FIRMATA_DATA_MODE
 
-char mVersion[10] = "20.01.003";
+char mVersion[10] = "20.01.004";
 //char SmartServo_Version[7] = "001.01";
 
 union sysex_message sysex = {0};
@@ -605,7 +605,7 @@ static void smart_servo_cmd_process(void *arg)
       led_r = readbyte(sysex.val.value,1);
       led_g = readbyte(sysex.val.value,3);
       led_b = readbyte(sysex.val.value,5);
-      set_rgb(led_r,led_g,led_b);
+      user_set_rgb(led_r,led_g,led_b);
       SendErrorUart0(PROCESS_SUC);
       break;
     }
@@ -1599,7 +1599,7 @@ static void cmd_set_rgb_led(char *cmd)
       b_value = atoi(str+1);
     }
   }
-  set_rgb(r_value,g_value,b_value);
+  user_set_rgb(r_value,g_value,b_value);
   SendErrorUart0(PROCESS_SUC);
 }
 

@@ -243,7 +243,7 @@ static void servodet_overcurrent_handle(void)
 
 static void servodet_limitcurrent_handle(void)
 {
-#define LIMIT_MAX_VOLTAGE		7400		
+#define LIMIT_MAX_VOLTAGE		7800//7400		
 	int32_t limit_current;
 	int32_t limit_current_7_4v;
 	int32_t limit_pwm;
@@ -257,16 +257,12 @@ static void servodet_limitcurrent_handle(void)
 	{
 		limit_pwm = MAX_OUTPUT_PWM; 
 
-		//max_current(voltage) = voltage * max_current(7.4V) / 7.4V, 单位mA
-		limit_current = (int32_t)(g_servo_info.voltage * limit_current_7_4v) / 7400;
+		limit_current = (int32_t)(g_servo_info.voltage * limit_current_7_4v) / LIMIT_MAX_VOLTAGE;
 	}
 	else
 	{
 		//当电压大于8V时，保持输出转速和功率不变，减低PWM占空比，为了保护舵机寿命
-		limit_pwm = LIMIT_MAX_VOLTAGE * MAX_OUTPUT_PWM / g_servo_info.voltage; //7.4v -> max output
-
-		//max_current(voltage) = voltage * max_current(7.4V) / 7.4V, 单位mA
-		limit_current = (int32_t)(LIMIT_MAX_VOLTAGE * limit_current_7_4v) / 7400;
+		limit_pwm =  LIMIT_MAX_VOLTAGE * MAX_OUTPUT_PWM / g_servo_info.voltage; //7.4v -> max output
 	
 		//功率守恒
 		//Ix = LIMIT_MAX_VOLTAGE * I_8V / Ux

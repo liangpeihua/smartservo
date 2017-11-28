@@ -1,4 +1,15 @@
----- limit_pwm Matches (3 in 3 files) ----
-main.c (src) line 55 : uint16_t limit_pwm;
-main.h (inc) line 22 : extern uint16_t limit_pwm;
-smart_servo_cmd_process in protocol.c (src) :       speed_pwm = map(speed_pwm, 0, limit_pwm, 0, 50);
+---- set_rgb Matches (14 in 3 files) ----
+smart_servo_cmd_process in protocol.c (src) :       set_rgb(led_r,led_g,led_b);
+cmd_set_rgb_led in protocol.c (src) :   set_rgb(r_value,g_value,b_value);
+rgb_init in rgb.c (src) :   set_rgb(0,0,255);
+rgb_change in rgb.c (src) :       set_rgb(255,0,0);
+rgb_change in rgb.c (src) :       set_rgb(0,255,0);
+rgb_change in rgb.c (src) :       set_rgb(0,0,255);
+rgb_change in rgb.c (src) :       set_rgb(0,0,0);
+rgb_process in rgb.c (src) : 		set_rgb(user_set_r, user_set_g, user_set_b);
+rgb_process in rgb.c (src) : 			set_rgb(255,255,255);
+rgb_process in rgb.c (src) : 			set_rgb(0,0,0);
+rgb_process in rgb.c (src) : 			set_rgb(255,0,0);
+rgb_process in rgb.c (src) : 			set_rgb(0,0,0);
+rgb_process in rgb.c (src) : 		set_rgb(0,0,255);
+rgb.h (inc) line 11 : void set_rgb(uint8_t led_r,uint8_t led_g,uint8_t led_b);

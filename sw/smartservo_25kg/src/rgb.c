@@ -8,6 +8,9 @@
 #include "servo_detect.h"
 #include "servo_driver.h"
 
+uint8_t g_user_setrgb = 0;
+uint8_t user_set_r, user_set_g, user_set_b;
+
 
 //GPIO define
 #if MP6528
@@ -42,6 +45,15 @@ void set_rgb(uint8_t led_r,uint8_t led_g,uint8_t led_b)
   pwm_write(SMART_SERVO_LED_B,(255-led_b),0,255);
 }
 
+void user_set_rgb(uint8_t led_r,uint8_t led_g,uint8_t led_b)
+{
+	g_user_setrgb = 1;
+  user_set_r = led_r;
+  user_set_g = led_g;
+  user_set_b = led_b;
+}
+
+
 void rgb_change(uint8_t led_color)
 {
   switch(led_color)
@@ -66,8 +78,12 @@ void rgb_process(void)
 {
 	static uint8_t flicker_cnt = 0;
 
+	if(g_user_setrgb == 1)
+	{
+		set_rgb(user_set_r, user_set_g, user_set_b);
+	}
 	//3.舵机收到握手命令时，白灯闪烁三次
-	if(shake_hand_flag == true)
+	else if(shake_hand_flag == true)
 	{
 		static uint8_t count = 0;
 		++count;

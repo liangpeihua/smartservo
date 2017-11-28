@@ -9,6 +9,7 @@
 
 void rgb_init(void);
 void set_rgb(uint8_t led_r,uint8_t led_g,uint8_t led_b);
+void user_set_rgb(uint8_t led_r,uint8_t led_g,uint8_t led_b);
 void rgb_process(void);
 
 

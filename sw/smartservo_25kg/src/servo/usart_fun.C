@@ -238,7 +238,7 @@ void USART_SendPackage(void)
 	static uint32_t count = 0;
 
 	count++;
-	if(count < 10)
+	if(count < 1)
 	{
 		return;
 	}
@@ -247,7 +247,7 @@ void USART_SendPackage(void)
 	//speed
 	*(int16_t*)&buff[0] = g_servo_info.cur_speed;
 	*(int16_t*)&buff[2] = g_servo_info.cur_pos/10;
-	*(int16_t*)&buff[4] = g_servo_info.posmode_tarspeed;
+	*(int16_t*)&buff[4] = g_servo_info.tar_speed;//g_servo_info.posmode_tarspeed;
 	*(int16_t*)&buff[6] = g_servo_info.tar_pos/10;
 	COMSendBuffer(0x00660001, buff, 8);
 

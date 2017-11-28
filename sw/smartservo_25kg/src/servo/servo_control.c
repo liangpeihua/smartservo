@@ -154,9 +154,9 @@ static void motor_pos_mode(void)
 	pos_ctrl.last_error = pos_error;
 	
 	//speed pid
-	H = 600;//最大减速临界角
-	K = 50;//最大目标速度
-	A = -50.0 / pow(H,2);//系数，带入坐标点(0, 0)
+	H = 700;
+	K = MAX_TAR_SPEED;
+	A = (float)(-MAX_TAR_SPEED) / pow(H,2);
 	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
 	LIMIT_DEATH(pos_error, 10);
 	abspos_error = abs_user(pos_error);
