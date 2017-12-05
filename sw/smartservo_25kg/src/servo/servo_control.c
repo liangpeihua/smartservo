@@ -1,3 +1,20 @@
+/**
+ * @file    servo_control.c
+ * @author  Payton
+ * @version V1.0.0
+ * @date    2017/11/17
+ * @brief   
+ *
+ * \par Description
+ * This file is servo control algorithm.
+ *
+ * \par History:
+ * <pre>
+ * `<Author>`        `<Time>`         `<Version>`        `<Descr>`
+ * Payton            2017/11/17         1.0.0            create
+ * </pre>
+ *
+ */
 #include "servo_control.h"
 #include "servo_driver.h"
 #include "servo_detect.h"
@@ -91,6 +108,7 @@ static void motor_speed_mode(void)
 		g_eSysMotionStatus = ERROR_MODE;
 		return;
 	}
+	g_servo_info.posmode_tarspeed = g_servo_info.tar_speed;
 
 	speed_error = g_servo_info.tar_speed - g_servo_info.cur_speed;
 	speed_error = constrain(speed_error,-20,20);
@@ -156,7 +174,7 @@ static void motor_pos_mode(void)
 	pos_ctrl.last_error = pos_error;
 	
 	//speed pid
-	H = 700;
+	H = 650;
 	K = MAX_TAR_SPEED;
 	A = (float)(-MAX_TAR_SPEED) / pow(H,2);
 	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
@@ -300,13 +318,11 @@ static void  motor_torque_mode(void)
 
 {
 	int32_t pwm;
-	tar_torque = g_servo_info.tar_torque*2;
+//	tar_torque = 2000;//g_servo_info.tar_torque*2;
 	pwm = servodriver_limitcurrent(g_servo_info.current, tar_torque, s_output_pwm);
 	servodriver_set_pwm(pwm);
 }
 }
-
-
 
 static void motor_error_mode(void)
 {

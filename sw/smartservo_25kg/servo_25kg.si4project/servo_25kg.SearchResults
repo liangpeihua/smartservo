@@ -1,4 +1,3 @@
----- g_servo_info.torquemode_tartorque Matches (3 in 3 files) ----
-servodet_overcurrent_handle in servo_detect.c (src\servo) : 	g_servo_info.torquemode_tartorque = tempvalue[index];
-{anonSERVO_DETECT} in servo_detect.h (src\servo) : 	int32_t torquemode_tartorque;	
-USART_SendPackage in usart_fun.C (src\servo) : 	*(int16_t*)&buff[6] = g_servo_info.torquemode_tartorque;//g_servo_info.limit_current;
+---- pwm_canceled Matches (2 in 2 files) ----
+MePwm.c (src) line 185 : void pwm_canceled(int pin)
+MePwm.h (inc) line 9 : void pwm_canceled(int pin);

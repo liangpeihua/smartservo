@@ -6,6 +6,6 @@
 
 void pwm_init(int pin,int fq);
 void pwm_write(int pin, int value,int min,int max);
-void pwm_canceled(int pin);
+void pwm_canceled(int pin, uint8_t state);
 
 #endif

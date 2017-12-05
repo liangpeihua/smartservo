@@ -60,21 +60,23 @@ void servodriver_set_pwm(int16_t pwm)
 		s_driver_pwm = set_pwm;
 	}
 
-  if(s_driver_pwm > 0)//cw
+  if(s_driver_pwm >= 0)//cw
   {
 #if  MP6528
-			pwm_write(SMART_SERVO_PWMA,s_driver_pwm,0,MAX_OUTPUT_PWM);
-			pwm_write(SMART_SERVO_PWMB,0,0,MAX_OUTPUT_PWM);
+		pwm_canceled(SMART_SERVO_PWMA, 0);	//Disable PWM Output
+		pwm_canceled(SMART_SERVO_PWMB, 1);	//Enable PWM Output
+		pwm_write(SMART_SERVO_PWMB,s_driver_pwm,0,MAX_OUTPUT_PWM);
 #elif MP6515
-			pwm_write(SMART_SERVO_ENBL,s_driver_pwm,0,MAX_OUTPUT_PWM);
-			digitalWrite(SMART_SERVO_PHASE,1);
+		pwm_write(SMART_SERVO_ENBL,s_driver_pwm,0,MAX_OUTPUT_PWM);
+		digitalWrite(SMART_SERVO_PHASE,1);
 #endif
   }
   else//ccw
   {
 #if  MP6528
-		pwm_write(SMART_SERVO_PWMA,0,0,MAX_OUTPUT_PWM);
-		pwm_write(SMART_SERVO_PWMB,-s_driver_pwm,0,MAX_OUTPUT_PWM);
+		pwm_canceled(SMART_SERVO_PWMB, 0);	//Disable PWM Output
+		pwm_canceled(SMART_SERVO_PWMA, 1);	//Enable PWM Output
+		pwm_write(SMART_SERVO_PWMA,-s_driver_pwm,0,MAX_OUTPUT_PWM);
 #elif MP6515
 		pwm_write(SMART_SERVO_ENBL,-s_driver_pwm,0,MAX_OUTPUT_PWM);
  	  digitalWrite(SMART_SERVO_PHASE,0);

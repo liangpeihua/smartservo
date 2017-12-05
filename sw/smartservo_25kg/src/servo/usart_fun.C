@@ -239,7 +239,7 @@ void USART_SendPackage(void)
 	extern int32_t set_current;
 	extern int16_t s_driver_pwm;
 	uint8_t buff[8] = {0};
-	static uint32_t count = 0;
+	static int32_t count = -1000;
 
 	count++;
 	if(count < 10)

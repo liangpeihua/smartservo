@@ -77,7 +77,7 @@ static void servodet_pos_handle(void)
 	}
 	else
 	{
-		cur_pos =  mp9960_read_raw_angle();
+		cur_pos = mp9960_read_raw_angle();
 	}
 
   if(abs_user(cur_pos - pre_pos) > RAW_ANGLE_MAX_INT/2)
@@ -95,7 +95,7 @@ static void servodet_pos_handle(void)
   cur_pos = cur_pos - g_servo_info.angle_zero_offset;
   cur_pos = g_servo_info.circular_count * RAW_ANGLE_MAX_INT + cur_pos;
 
-  g_servo_info.cur_pos = cur_pos * 3600 / 4096;//0.1°
+  g_servo_info.cur_pos = -1 * (cur_pos * 3600 / 4096);//0.1°
 }
 
 static void servodet_speed_handle(void)
@@ -204,31 +204,18 @@ static void servodet_temperature_handle(void)
 static void servodet_overcurrent_handle(void)
 {
 	static uint16_t over_count = 0;
-	static uint8_t index = 0; 
-	static int32_t tempvalue[8] = {0};
-	static int32_t sum = 0;
-	int32_t adc_value;
-	int32_t value;
+	static int32_t value;
 
-	adc_value = analogRead(SMART_SERVO_CURR_AD);
-	if(adc_value != 0)
-	{
-		tempvalue[index] = adc_value;
-	}
-	
-	sum += tempvalue[index];
-	value = (sum / 8); 
-	index++;
-	index %= 8;
-	sum -= tempvalue[index];
+	value=	analogRead(SMART_SERVO_CURR_AD);
 
 	//1V -> 1A, voltage = ADC*(3.3/4096)，amp=75
 	value = (int32_t)abs_user((value - g_servo_info.current_zero_offset)*3300/4096 / 0.375);//0.375
+	g_servo_info.current = (int32_t)(value*0.1 + g_servo_info.current*0.9); 
 		
-	if(abs_user(value) > SHORT_CURRENT_THSD)
+	if(abs_user(g_servo_info.current) > SHORT_CURRENT_THSD)
 	{
 		over_count++;
-		if(over_count > 50)//0.5s
+		if(over_count > 20)//0.2s
 		{
 			over_count = 20;
 	  	g_servo_info.errorid |= OVER_CURRENT_ERR;
@@ -237,13 +224,11 @@ static void servodet_overcurrent_handle(void)
 	else
 	{
 		over_count = 0;
-		if(value < (SHORT_CURRENT_THSD-CURR_HYSTERESIS_THSD))
+		if(g_servo_info.current < (SHORT_CURRENT_THSD-CURR_HYSTERESIS_THSD))
 		{
 		 // g_servo_info.errorid &= ~(OVER_CURRENT_ERR);
 		}
-	}
-
-	g_servo_info.current = value;  
+	} 
 }
 
 static void servodet_limitcurrent_handle(void)
@@ -369,7 +354,7 @@ void servodet_process(void)
 			servodet_limitcurrent_handle();
 			break;
 		case 4:
-			servodet_stall_handle();
+			//servodet_stall_handle();
 			break; 
 		case 5:
 			servodet_temperature_handle();

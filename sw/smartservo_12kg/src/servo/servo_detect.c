@@ -96,7 +96,7 @@ static void servodet_pos_handle(void)
   cur_pos = cur_pos - g_servo_info.angle_zero_offset;
   cur_pos = g_servo_info.circular_count * RAW_ANGLE_MAX_INT + cur_pos;
 
-  g_servo_info.cur_pos = cur_pos * 3600 / 4096;//0.1°
+  g_servo_info.cur_pos = -1 * (cur_pos * 3600 / 4096);//0.1°
 }
 
 static void servodet_speed_handle(void)
@@ -219,7 +219,7 @@ static void servodet_overcurrent_handle(void)
 	sum -= tempvalue[index];
 
 	//1V -> 1A, voltage = ADC*(3.3/4096)
-	value = (int32_t)(value - g_servo_info.current_zero_offset)*3300/4096;
+	value = (int32_t)abs_user((value - g_servo_info.current_zero_offset)*3300/4096);
 		
 	if(abs_user(value) > SHORT_CURRENT_THSD)
 	{

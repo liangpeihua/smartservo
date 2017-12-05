@@ -502,6 +502,7 @@ static void send_smart_voltage(int16_t vol_value)
   write_byte_uart0(GET_SERVO_VOLTAGE);
   checksum = (device_id + SMART_SERVO + GET_SERVO_VOLTAGE);
   //vol_temp = calculate_voltage(vol_value);
+  vol_temp = vol_value / 1000.0;
   checksum += sendFloat(vol_temp);
   checksum = checksum & 0x7f;
   write_byte_uart0(checksum);
@@ -1625,7 +1626,7 @@ static void cmd_get_servo_current(char *cmd)
 
 static void cmd_get_servo_voltage(char *cmd)
 {
-  uart0_printf("G%d M9 V%.2f\r\n",device_id,g_servo_info.voltage);
+  uart0_printf("G%d M9 V%.2f\r\n",device_id,g_servo_info.voltage/1000);
 }
 
 static void cmd_get_servo_angle(char *cmd)

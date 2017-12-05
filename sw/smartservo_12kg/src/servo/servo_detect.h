@@ -27,6 +27,8 @@ typedef struct
 	int32_t limit_current;
 	uint32_t errorid;
 	int32_t posmode_tarspeed;				
+	int32_t torquemode_tartorque;	
+	boolean reach_tar_pos;
 }SERVO_DETECT;
 
 

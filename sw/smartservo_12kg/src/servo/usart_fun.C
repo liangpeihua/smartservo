@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define  SUPPORT_MY_DEBUG		1
+#define  SUPPORT_MY_DEBUG		0
 
 #define RX_MAX_SIZE		50
 #define TX_MAX_SIZE		50
