@@ -1,3 +1,0 @@
----- pwm_canceled Matches (2 in 2 files) ----
-MePwm.c (src) line 185 : void pwm_canceled(int pin)
-MePwm.h (inc) line 9 : void pwm_canceled(int pin);

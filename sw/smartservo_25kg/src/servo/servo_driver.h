@@ -1,3 +1,20 @@
+/**
+ * @file    servo_driver.h
+ * @author  Payton
+ * @version V1.0.0
+ * @date    2017/11/17
+ * @brief   
+ *
+ * \par Description
+ * This file is servo driver.
+ *
+ * \par History:
+ * <pre>
+ * `<Author>`        `<Time>`         `<Version>`        `<Descr>`
+ * Payton            2017/11/17         1.0.0            create
+ * </pre>
+ *
+ */
 #ifndef __SERVO_DRIVER_H__
 #define __SERVO_DRIVER_H__
 
@@ -26,7 +43,7 @@
 
 #define MAX_OUTPUT_PWM		1024
 #define MAX_TAR_SPEED 	 (60)    // ---- 0.16sec/60   (28.57 rpm)    0.200s/60°
-#define MAX_TORQUE				255
+#define MAX_TORQUE				(1024)
 
 typedef enum
 {
@@ -41,7 +58,6 @@ typedef enum
 
 
 void servodriver_init(void);
-void servodriver_set_pwm(int16_t pwm);
 void servodriver_run_idle(void);
 void servodriver_run_abs_pos(int32_t angle,float speed);
 void servodriver_run_relative_pos(int32_t angle,float speed);
@@ -50,8 +66,11 @@ void servodriver_run_pwm(int16_t pwm);
 void servodriver_run_torque(int32_t angle,float speed,int32_t torque);
 void servodriver_run_error(void);
 void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t param3);
-int16_t servodriver_getpwmvalue(void);
-int32_t servodriver_limitcurrent(int32_t cur_current, int32_t limit_current,int32_t set_pwm);
+int16_t servodriver_get_pwmvalue(void);
+int32_t servodriver_limitcurrent_protect(int32_t cur_current, int32_t limit_current,int32_t set_pwm);
+void servodriver_set_limitcurrent(int32_t limit_current);
+void servodriver_set_pwm(int16_t pwm);
+
 
 
 

@@ -27,8 +27,8 @@
 #include "main.h"
 #include "usart_Fun.h"
 	
-#define MAX_SPEED      		38	//1rpm/min,实测最大转速
-#define _PWM(Speed)		      ((Speed) * MAX_OUTPUT_PWM / MAX_SPEED)	//拟合pwm
+#define MAX_SPEED         60	//1rpm/min,实测最大转
+#define _PWM(Speed)      ((Speed) * MAX_OUTPUT_PWM / MAX_SPEED)	//拟合pwm
 
 STRUCT_PID speed_ctrl = {0};
 STRUCT_PID pos_ctrl = {0};
@@ -38,44 +38,70 @@ int32_t s_output_pwm = 0;
 //运动控制状态
 static boolean s_bMotionStatusChanged = TRUE;
 
+static MOTOR_CTRL_STATUS motor_idle_mode(void *param);
+static MOTOR_CTRL_STATUS motor_pwm_mode(void *param);
+static MOTOR_CTRL_STATUS motor_speed_mode(void *param);
+static MOTOR_CTRL_STATUS motor_pos_mode(void *param);
+static MOTOR_CTRL_STATUS motor_torque_mode(void *param);
+static MOTOR_CTRL_STATUS motor_error_mode(void *param);
+static MOTOR_CTRL_STATUS motor_debug_mode(void *param);
 
-static void motor_idle_mode(void)
+//运动控制处理函数
+typedef struct
 {
-	if(s_bMotionStatusChanged)
-	{
+  MOTOR_CTRL_STATUS (*motion_control)(void *param);//运动控制模式
+  void (*ack_event)(void);//到达目标位置时，产生的事件
+  int32_t param; 
+}MOTION_INFO;
+
+MOTION_INFO MotionProcessors[] = 
+{
+  {motor_idle_mode,    NULL, 0},
+  {motor_pwm_mode,     NULL, 0},
+  {motor_speed_mode,   NULL, 0},
+  {motor_pos_mode,     NULL, 0},
+  {motor_torque_mode,  NULL, 0},
+  {motor_error_mode,   NULL, 0},
+  {motor_debug_mode,   NULL, 0},
+};
+
+static MOTOR_CTRL_STATUS motor_idle_mode(void *param)
+{
+  if(s_bMotionStatusChanged)
+  {
     speed_ctrl.integral = 0;
     speed_ctrl.output = 0;
     pos_ctrl.integral = 0;
     pos_ctrl.output = 0;
     s_output_pwm = 0;
     servodriver_run_idle();
-		//servodriver_set_pwm(s_output_pwm);
-		g_servo_info.reach_tar_pos = true;
-	}    
-	servodriver_set_pwm(s_output_pwm);
+    //servodriver_set_pwm(s_output_pwm);
+    g_servo_info.reach_tar_pos = true;
+  }
+  servodriver_set_pwm(s_output_pwm);
+  return IDLE_MODE;
 }
 
-static void motor_pwm_mode(void)
+static MOTOR_CTRL_STATUS motor_pwm_mode(void *param)
 {
-	int32_t set_pwm = 0; 
-	static int32_t step_len = 0;
+  int32_t set_pwm = 0; 
+  static int32_t step_len = 0;
 
-	if(s_bMotionStatusChanged)
-	{
-		step_len = 30;
-		s_output_pwm = 0;
-	}
+  if(s_bMotionStatusChanged)
+  {
+    step_len = 30;
+    s_output_pwm = 0;
+  }
 
-	if(g_servo_info.errorid != 0)
-	{
-		g_eSysMotionStatus = ERROR_MODE;
-		return;
-	}
+  if(g_servo_info.errorid != 0)
+  {
+    return ERROR_MODE;
+  }
 
-	set_pwm = g_servo_info.tar_pwm;
+  set_pwm = g_servo_info.tar_pwm;
 
-	if(set_pwm > s_output_pwm+step_len)
-	{
+  if(set_pwm > s_output_pwm+step_len)
+  {
     s_output_pwm += step_len; 
   }
   else if(set_pwm < s_output_pwm-step_len)
@@ -87,276 +113,316 @@ static void motor_pwm_mode(void)
     s_output_pwm = set_pwm;
   }
 
-	s_output_pwm = constrain(s_output_pwm, -g_servo_info.limit_pwm, g_servo_info.limit_pwm);
-	servodriver_set_pwm(s_output_pwm);
+  s_output_pwm = constrain(s_output_pwm, -g_servo_info.limit_pwm, g_servo_info.limit_pwm);
+  servodriver_set_pwm(s_output_pwm);
+
+  return PWM_MODE;
 }
 
-static void motor_speed_mode(void)
+static MOTOR_CTRL_STATUS motor_speed_mode(void *param)
 {
-	int32_t speed_error;
+  int32_t speed_error;
 
-	if(s_bMotionStatusChanged)
-	{
-		speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
-		speed_ctrl.output = 0;
-		speed_ctrl.Kp = 200;
-		speed_ctrl.Ki = 20;
-	}
+  if(s_bMotionStatusChanged)
+  {
+  speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
+  speed_ctrl.output = 0;
+  speed_ctrl.Kp = 200;
+  speed_ctrl.Ki = 20;
+  }
 
-	if(g_servo_info.errorid != 0)
-	{
-		g_eSysMotionStatus = ERROR_MODE;
-		return;
-	}
-	g_servo_info.posmode_tarspeed = g_servo_info.tar_speed;
+  if(g_servo_info.errorid != 0)
+  {
+    return ERROR_MODE;
+  }
+  g_servo_info.posmode_tarspeed = g_servo_info.tar_speed;
 
-	speed_error = g_servo_info.tar_speed - g_servo_info.cur_speed;
-	speed_error = constrain(speed_error,-20,20);
-	speed_ctrl.integral += speed_error;
-	speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.limit_pwm/speed_ctrl.Ki));
-	speed_ctrl.output = (speed_ctrl.Kp * speed_error + speed_ctrl.Ki * speed_ctrl.integral) / 10;
-	speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  speed_error = g_servo_info.tar_speed - g_servo_info.cur_speed;
+  speed_error = constrain(speed_error,-20,20);
+  speed_ctrl.integral += speed_error;
+  speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.limit_pwm/speed_ctrl.Ki));
+  speed_ctrl.output = (speed_ctrl.Kp * speed_error + speed_ctrl.Ki * speed_ctrl.integral) / 10;
+  speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
 
-	s_output_pwm = speed_ctrl.output;
-	servodriver_set_pwm(s_output_pwm);
+  s_output_pwm = speed_ctrl.output;
+  servodriver_set_pwm(s_output_pwm);
+
+  return SPEED_MODE;
 }
 
 //占用时间T= 70us
-static void motor_pos_mode(void)
+static MOTOR_CTRL_STATUS motor_pos_mode(void *param)
 {
-	int32_t speed_error;
-	int32_t pos_error;
-	int32_t abspos_error;
-	int32_t target_speed;
-	static int32_t pre_tar_pos = 0;
-	float A;
-	int32_t H;
-	int32_t K;
+  int32_t speed_error;
+  int32_t pos_error;
+  int32_t abspos_error;
+  int32_t target_speed;
+  static int32_t pre_tar_pos = 0;
+  float A;
+  int32_t H;
+  int32_t K;
 
-	if(s_bMotionStatusChanged)
-	{
-		speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
-		speed_ctrl.output = 0;
-		speed_ctrl.Kp = 200;
-		speed_ctrl.Ki = 20;
-		
-		pos_ctrl.output = 0;
-		pos_ctrl.Kp = 1;
-		pos_ctrl.Kd = 2;
+  if(s_bMotionStatusChanged)
+  {
+    speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
+    speed_ctrl.output = 0;
+    speed_ctrl.Kp = 200;
+    speed_ctrl.Ki = 20;
 
-		pre_tar_pos = g_servo_info.tar_pos;
-	}
+    pos_ctrl.output = 0;
+    pos_ctrl.Kp = 1;
+    pos_ctrl.Kd = 2;
 
-	if(g_servo_info.errorid != 0)
-	{
-		g_eSysMotionStatus = ERROR_MODE;
-		return;
-	}
+    pre_tar_pos = g_servo_info.tar_pos;
+  }
 
-	if(pre_tar_pos != g_servo_info.tar_pos)
-	{
-		pos_ctrl.Kp = 1;
-		pos_ctrl.Kd = 2;
-		pre_tar_pos = g_servo_info.tar_pos;
-	}
-	else if(abs_user(pos_error) < 10)
-	{
-		pos_ctrl.Kp = 10;
-		pos_ctrl.Kd = 20;
-	}
+  if(g_servo_info.errorid != 0)
+  {
+    return ERROR_MODE;
+  }
 
-	//pos pid
-	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-	LIMIT_DEATH(pos_error, 10);
-	pos_error = constrain(pos_error,-20,20);
-	pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
-	pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
-	pos_ctrl.last_error = pos_error;
-	
-	//speed pid
-	H = 650;
-	K = MAX_TAR_SPEED;
-	A = (float)(-MAX_TAR_SPEED) / pow(H,2);
-	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-	LIMIT_DEATH(pos_error, 10);
-	abspos_error = abs_user(pos_error);
-	if(abspos_error == 0)
-	{
-		target_speed = 0;
-	}
-	else if(abspos_error < H)
-	{
-		target_speed = A*pow((abspos_error - H),2) + K;//二次函数，顶点式：y=a(x-h)²+k(a≠0）
-		if(target_speed < 1){
-			target_speed = 1;
-		}
-	}
-	else
-	{
-		target_speed = abs_user(g_servo_info.tar_speed);
-	}
-	
-	target_speed = constrain(target_speed,0,abs_user(g_servo_info.tar_speed));
-	g_servo_info.posmode_tarspeed = target_speed;
-	if(pos_error > 0){
-		target_speed= abs_user(target_speed);
-	}
-	else{
-		target_speed= -abs_user(target_speed);
-	}
-	speed_error = target_speed - g_servo_info.cur_speed;
-	speed_error = constrain(speed_error,-20,20);
-	speed_ctrl.integral += speed_error;
-	speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.limit_pwm/speed_ctrl.Ki));
-	speed_ctrl.output = (speed_ctrl.Kp * speed_error + speed_ctrl.Ki * speed_ctrl.integral) / 10;
-	speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  if(pre_tar_pos != g_servo_info.tar_pos)
+  {
+    pos_ctrl.Kp = 1;
+    pos_ctrl.Kd = 2;
+    pre_tar_pos = g_servo_info.tar_pos;
+  }
+  else if(abs_user(pos_error) < 10)
+  {
+    pos_ctrl.Kp = 10;
+    pos_ctrl.Kd = 20;
+  }
 
-	s_output_pwm = pos_ctrl.output + speed_ctrl.output;
-	if(abs_user(s_output_pwm) < 50){
-		s_output_pwm = 0;
-	}
-	s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
-	servodriver_set_pwm(s_output_pwm);
+  //pos pid
+  pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
+  LIMIT_DEATH(pos_error, 10);
+  pos_error = constrain(pos_error,-20,20);
+  pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
+  pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  pos_ctrl.last_error = pos_error;
+
+  //speed pid
+  H = 650;
+  K = MAX_TAR_SPEED;
+  A = (float)(-MAX_TAR_SPEED) / pow(H,2);
+  pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
+  LIMIT_DEATH(pos_error, 10);
+  abspos_error = abs_user(pos_error);
+  if(abspos_error == 0)
+  {
+    target_speed = 0;
+  }
+  else if(abspos_error < H)
+  {
+    target_speed = A*pow((abspos_error - H),2) + K;//二次函数，顶点式：y=a(x-h)²+k
+    if(target_speed < 1){
+      target_speed = 1;
+    }
+  }
+  else
+  {
+    target_speed = abs_user(g_servo_info.tar_speed);
+  }
+
+  target_speed = constrain(target_speed,0,abs_user(g_servo_info.tar_speed));
+  g_servo_info.posmode_tarspeed = target_speed;
+  if(pos_error > 0){
+    target_speed= abs_user(target_speed);
+  }
+  else{
+    target_speed= -abs_user(target_speed);
+  }
+  speed_error = target_speed - g_servo_info.cur_speed;
+  speed_error = constrain(speed_error,-20,20);
+  speed_ctrl.integral += speed_error;
+  speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.limit_pwm/speed_ctrl.Ki));
+  speed_ctrl.output = (speed_ctrl.Kp * speed_error + speed_ctrl.Ki * speed_ctrl.integral) / 10;
+  speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+
+  s_output_pwm = pos_ctrl.output + speed_ctrl.output;
+  if(abs_user(s_output_pwm) < 50){
+    s_output_pwm = 0;
+  }
+  s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  servodriver_set_pwm(s_output_pwm);
+
+  return POS_MODE;
 }
 
-static void  motor_torque_mode(void)
+static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
 {
-	int32_t speed_error;
-	int32_t pos_error;
-	int32_t abspos_error;
-	int32_t target_speed;
-	int32_t tar_torque;
-	static int32_t pre_tar_pos = 0;
-	float A;
-	int32_t H;
-	int32_t K;
+  int32_t speed_error;
+  int32_t pos_error;
+  int32_t abspos_error;
+  int32_t target_speed;
+  int32_t torque_error;
+  static int32_t pre_tar_pos = 0;
+  float A;
+  int32_t H;
+  int32_t K;
 
-	if(s_bMotionStatusChanged)
-	{
-		speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
-		speed_ctrl.output = 0;
-		speed_ctrl.Kp = 100;
-		speed_ctrl.Ki = 2;
-		
-		pos_ctrl.output = 0;
-		pos_ctrl.Kp = 1;
-		pos_ctrl.Kd = 2;
+  if(s_bMotionStatusChanged)
+  {
+    speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
+    speed_ctrl.output = 0;
+    speed_ctrl.Kp = 200;
+    speed_ctrl.Ki = 20;
 
-		torque_ctrl.integral = 0;
-		torque_ctrl.output = 0;
-		torque_ctrl.Kp = 100;
-		torque_ctrl.Ki = 2;
+    pos_ctrl.output = 0;
+    pos_ctrl.Kp = 1;
+    pos_ctrl.Kd = 2;
 
-		pre_tar_pos = g_servo_info.tar_pos;
-	}
+    torque_ctrl.integral = 0;
+    torque_ctrl.output = 0;
+    torque_ctrl.Kp = 100;
+    torque_ctrl.Ki = 2;
 
-	if(g_servo_info.errorid != 0)
-	{
-		g_eSysMotionStatus = ERROR_MODE;
-		return;
-	}
+    pre_tar_pos = g_servo_info.tar_pos;
+  }
 
-	if(pre_tar_pos != g_servo_info.tar_pos)
-	{
-		pos_ctrl.Kp = 1;
-		pos_ctrl.Kd = 2;
-		pre_tar_pos = g_servo_info.tar_pos;
-	}
-	else if(abs_user(pos_error) < 10)
-	{
-		pos_ctrl.Kp = 10;
-		pos_ctrl.Kd = 20;
-	}
+  if(g_servo_info.errorid != 0)
+  {
+    return ERROR_MODE;
+  }
 
-	//pos pid
-	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-	pos_error = constrain(pos_error,-20,20);
-	pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
-	pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
-	pos_ctrl.last_error = pos_error;
-	
-	//speed pid
-	H = 700;
-	K = MAX_TAR_SPEED;
-	A = (float)(-MAX_TAR_SPEED) / pow(H,2);
-	pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-	LIMIT_DEATH(pos_error, 10);
-	abspos_error = abs_user(pos_error);
-	if(abspos_error == 0)
-	{
-		target_speed = 0;
-	}
-	else if(abspos_error < H)
-	{
-		target_speed = A*pow((abspos_error - H),2) + K;//二次函数，顶点式：y=a(x-h)²+k(a≠0）
-		if(target_speed < 1){
-			target_speed = 1;
-		}
-	}
-	else
-	{
-		target_speed = abs_user(g_servo_info.tar_speed);
-	}
-	
-	target_speed = constrain(target_speed,0,abs_user(g_servo_info.tar_speed));
-	g_servo_info.posmode_tarspeed = target_speed;
-	if(pos_error > 0){
-		target_speed= abs_user(target_speed);
-	}
-	else{
-		target_speed= -abs_user(target_speed);
-	}
-	speed_error = target_speed - g_servo_info.cur_speed;
-	speed_error = constrain(speed_error,-20,20);
-	speed_ctrl.integral += speed_error;
-	speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.limit_pwm/speed_ctrl.Ki));
-	speed_ctrl.output = (speed_ctrl.Kp * speed_error + speed_ctrl.Ki * speed_ctrl.integral) / 10;
-	speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  if(pre_tar_pos != g_servo_info.tar_pos)
+  {
+    pos_ctrl.Kp = 1;
+    pos_ctrl.Kd = 2;
+    pre_tar_pos = g_servo_info.tar_pos;
+  }
+  else if(abs_user(pos_error) < 10)
+  {
+    pos_ctrl.Kp = 10;
+    pos_ctrl.Kd = 20;
+  }
 
-	s_output_pwm = pos_ctrl.output + speed_ctrl.output;
-	s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  //pos pid
+  pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
+  LIMIT_DEATH(pos_error, 10);
+  pos_error = constrain(pos_error,-20,20);
+  pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
+  pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  pos_ctrl.last_error = pos_error;
 
-{
-	int32_t pwm;
-//	tar_torque = 2000;//g_servo_info.tar_torque*2;
-	pwm = servodriver_limitcurrent(g_servo_info.current, tar_torque, s_output_pwm);
-	servodriver_set_pwm(pwm);
+  //speed pid
+  H = 650;
+  K = MAX_TAR_SPEED;
+  A = (float)(-MAX_TAR_SPEED) / pow(H,2);
+  pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
+  LIMIT_DEATH(pos_error, 10);
+  abspos_error = abs_user(pos_error);
+  if(abspos_error == 0)
+  {
+    target_speed = 0;
+  }
+  else if(abspos_error < H)
+  {
+    target_speed = A*pow((abspos_error - H),2) + K;//二次函数，顶点式：y=a(x-h)²+k
+    if(target_speed < 1){
+      target_speed = 1;
+    }
+  }
+  else
+  {
+    target_speed = abs_user(g_servo_info.tar_speed);
+  }
+
+  target_speed = constrain(target_speed,0,abs_user(g_servo_info.tar_speed));
+  g_servo_info.posmode_tarspeed = target_speed;
+  if(pos_error > 0){
+    target_speed= abs_user(target_speed);
+  }
+  else{
+    target_speed= -abs_user(target_speed);
+  }
+  speed_error = target_speed - g_servo_info.cur_speed;
+  speed_error = constrain(speed_error,-20,20);
+  speed_ctrl.integral += speed_error;
+  speed_ctrl.integral = constrain(speed_ctrl.integral,-(10*g_servo_info.limit_pwm/speed_ctrl.Ki),(10*g_servo_info.limit_pwm/speed_ctrl.Ki));
+  speed_ctrl.output = (speed_ctrl.Kp * speed_error + speed_ctrl.Ki * speed_ctrl.integral) / 10;
+  speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+
+#if 0
+  //torque pid
+  torque_error = abs_user(g_servo_info.tar_torque - g_servo_info.current);
+
+  torque_ctrl.Kp = 500;
+  torque_ctrl.Ki = 5;
+
+  if(g_servo_info.current > g_servo_info.tar_torque)
+  {
+		torque_error = constrain(torque_error,-200,200);
+		torque_ctrl.integral += torque_error;
+		torque_ctrl.integral = constrain(torque_ctrl.integral,-(int32_t)(100*1500/torque_ctrl.Ki),(int32_t)(100*1500/torque_ctrl.Ki));
+		torque_ctrl.output = (torque_ctrl.Kp * torque_error + torque_ctrl.Ki * torque_ctrl.integral) / 100;
+		torque_ctrl.output = constrain(torque_ctrl.output,-(int32_t)(1500), (int32_t)(1500));
+
+  }
+  else if(g_servo_info.current > (int32_t)(g_servo_info.tar_torque-20))//20mA滞回
+  {
+  }
+  else
+  {
+    if(torque_ctrl.output > 2){
+      torque_ctrl.output -= 2;
+    }
+  }
+
+  if(speed_ctrl.output > 0)
+  {
+     s_output_pwm = pos_ctrl.output + speed_ctrl.output - torque_ctrl.output;
+  }
+  else
+  {
+     s_output_pwm = pos_ctrl.output + speed_ctrl.output + torque_ctrl.output;
+  }
+
+  //s_output_pwm = pos_ctrl.output + speed_ctrl.output + torque_ctrl.output;
+  s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  servodriver_set_pwm(s_output_pwm);
+#else
+  s_output_pwm = pos_ctrl.output + speed_ctrl.output;
+  s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
+  servodriver_set_limitcurrent(g_servo_info.tar_torque);
+  servodriver_set_pwm(s_output_pwm);
+#endif
+
+  return TORQUE_MODE;
 }
-}
 
-static void motor_error_mode(void)
+static MOTOR_CTRL_STATUS motor_error_mode(void *param)
 {
-	static int32_t step_len = 0;
-	int32_t set_pwm = 0; 
-		
-	if(s_bMotionStatusChanged)
-	{
-		speed_ctrl.integral = 0;
-		speed_ctrl.output = 0;
-		pos_ctrl.integral = 0;
-		pos_ctrl.output = 0;
-		step_len = 0;
-	}
+  static int32_t step_len = 0;
+  int32_t set_pwm = 0; 
+  	
+  if(s_bMotionStatusChanged)
+  {
+    speed_ctrl.integral = 0;
+    speed_ctrl.output = 0;
+    pos_ctrl.integral = 0;
+    pos_ctrl.output = 0;
+    step_len = 0;
+  }
 
-	if(s_output_pwm == 0)
-	{
-		g_eSysMotionStatus = IDLE_MODE;
-		return;
-	}
+  if(s_output_pwm == 0)
+  {
+    return IDLE_MODE;
+  }
 
-	if(abs_user(s_output_pwm) > g_servo_info.limit_pwm/2)
-	{
-		step_len = 3;
-	}
-	else
-	{
-		step_len = 1;
-	}
+  if(abs_user(s_output_pwm) > g_servo_info.limit_pwm/2)
+  {
+    step_len = 5;
+  }
+  else
+  {
+    step_len = 2;
+  }
 
-	set_pwm = 0;
+  set_pwm = 0;
 
-	if(set_pwm > s_output_pwm+step_len)
-	{
+  if(set_pwm > s_output_pwm+step_len)
+  {
     s_output_pwm += step_len; 
   }
   else if(set_pwm < s_output_pwm-step_len)
@@ -367,44 +433,47 @@ static void motor_error_mode(void)
   {
     s_output_pwm = set_pwm;
   }
-	
-	servodriver_set_pwm(s_output_pwm);
+
+  servodriver_set_pwm(s_output_pwm);
+
+  return ERROR_MODE;
 }
 
-static void motor_debug_mode(void)
+static MOTOR_CTRL_STATUS motor_debug_mode(void *param)
 {
-	int32_t set_pwm = 0; 
-	static int32_t step_len = 0;
+  int32_t set_pwm = 0; 
+  static int32_t step_len = 0;
 
-	if(s_bMotionStatusChanged)
-	{
-		step_len = 5;
-		s_output_pwm = 100;
-	}
+  if(s_bMotionStatusChanged)
+  {
+    step_len = 5;
+    s_output_pwm = 100;
+  }
 
-	if(g_servo_info.errorid != 0)
-	{
-		g_eSysMotionStatus = ERROR_MODE;
-		return;
-	}
+  if(g_servo_info.errorid != 0)
+  {
+    return ERROR_MODE;
+  }
 
-	set_pwm = g_servo_info.tar_pwm;
+  set_pwm = g_servo_info.tar_pwm;
 
-	if(set_pwm > s_output_pwm+step_len)
-	{
-		s_output_pwm += step_len; 
-	}
-	else if(set_pwm < s_output_pwm-step_len)
-	{
-		s_output_pwm -= step_len;
-	}
-	else
-	{
-		s_output_pwm = set_pwm;
-	}
+  if(set_pwm > s_output_pwm+step_len)
+  {
+    s_output_pwm += step_len; 
+  }
+  else if(set_pwm < s_output_pwm-step_len)
+  {
+    s_output_pwm -= step_len;
+  }
+  else
+  {
+    s_output_pwm = set_pwm;
+  }
 
-	s_output_pwm = constrain(s_output_pwm, -g_servo_info.limit_pwm, g_servo_info.limit_pwm);
-	servodriver_set_pwm(s_output_pwm);
+  s_output_pwm = constrain(s_output_pwm, -g_servo_info.limit_pwm, g_servo_info.limit_pwm);
+  servodriver_set_pwm(s_output_pwm);
+
+  return DEBUG_MODE;
 }
 
 
@@ -417,73 +486,47 @@ static void motor_debug_mode(void)
 ************************************************************/
 void motor_process(void)
 {
-  static MOTOR_CTRL_STATUS pre_state = (MOTOR_CTRL_STATUS)0xFF;
+  static MOTOR_CTRL_STATUS last_motion_status = (MOTOR_CTRL_STATUS)0xFF;
 
-	if(g_servo_info.ready == false)
-	{
-		return;
-	}
-
-  s_bMotionStatusChanged = false;
-  if(pre_state != g_eSysMotionStatus)
+  if(g_servo_info.ready == false)
   {
-    s_bMotionStatusChanged = true;
+    return;
   }
-  pre_state = g_eSysMotionStatus;
 
-  switch(g_eSysMotionStatus)
+  //如果状态发送改变
+  if(last_motion_status != g_eSysMotionStatus) 
   {
-    case IDLE_MODE:
-      motor_idle_mode();
-      break;
-        
-    case PWM_MODE:
-      motor_pwm_mode();
-      break;
-        
-    case SPEED_MODE:
-      motor_speed_mode();
-      break; 
-        
-    case POS_MODE:
-      motor_pos_mode();
-      break;
+    //记录上次平衡标志
+    last_motion_status = g_eSysMotionStatus;
 
-    case TORQUE_MODE:
-    	motor_torque_mode();
-			break;
-			
-    case ERROR_MODE:
-      motor_error_mode();
-      break;
-      
-		case DEBUG_MODE:
-			motor_debug_mode();
-			break;
-		
-    default: 
-			motor_idle_mode();
-      break;
+    //设置状态发送改变
+    s_bMotionStatusChanged = TRUE;
   }
+
+  //执行函数
+  g_eSysMotionStatus = MotionProcessors[g_eSysMotionStatus].motion_control(&(MotionProcessors[g_eSysMotionStatus].param));
+
+  //执行完函数后，清除状态变化标志
+  s_bMotionStatusChanged = FALSE;	
 }
 
-//void check_whether_reach_the_postion(void)
-//{
-//	uint8_t checksum;
-//	uint8_t reach_pos_flag = 1;
+  //void check_whether_reach_the_postion(void)
+  //{
+  //	uint8_t checksum;
+  //	uint8_t reach_pos_flag = 1;
 
-//	if(g_servo_info.reach_tar_pos)
-//	
-//	//response mesaage to UART0
-//	write_byte_uart0(START_SYSEX);
-//	write_byte_uart0(device_id);
-//	write_byte_uart0(SMART_SERVO);
-//	write_byte_uart0(CHECK_WHETHER_REACH_THE_SET_POSITION);
-//	write_byte_uart0((uint8_t)reach_pos_flag);
-//	checksum = (device_id + SMART_SERVO + CHECK_WHETHER_REACH_THE_SET_POSITION+(uint8_t)reach_pos_flag);
-//	checksum = checksum & 0x7f;
-//	write_byte_uart0(checksum);
-//	write_byte_uart0(END_SYSEX);
-//}
+  //	if(g_servo_info.reach_tar_pos)
+  //	
+  //	//response mesaage to UART0
+  //	write_byte_uart0(START_SYSEX);
+  //	write_byte_uart0(device_id);
+  //	write_byte_uart0(SMART_SERVO);
+  //	write_byte_uart0(CHECK_WHETHER_REACH_THE_SET_POSITION);
+  //	write_byte_uart0((uint8_t)reach_pos_flag);
+  //	checksum = (device_id + SMART_SERVO + CHECK_WHETHER_REACH_THE_SET_POSITION+(uint8_t)reach_pos_flag);
+  //	checksum = checksum & 0x7f;
+  //	write_byte_uart0(checksum);
+  //	write_byte_uart0(END_SYSEX);
+  //}
 
 

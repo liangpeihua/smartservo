@@ -17,7 +17,7 @@ static USART_FRAME_DEF UsartFrameParam;
 * Function Name  : USART_RecFrame
 * Description    : 解包函数	 格式(AA 55 A5)
 * Input          : data
-* Output         : 解析出的数据存入buf所指空间
+* Output         : 解析出的数据存入buff
 * Return         : None
 *******************************************************************************/
 boolean USART_RecFrame(uint8_t data, uint8_t *pbuf, uint16_t *iolen)
@@ -36,7 +36,7 @@ boolean USART_RecFrame(uint8_t data, uint8_t *pbuf, uint16_t *iolen)
 		return false;
 	}
 	if( (data == USART_FRAMETAIL) && (pframe->Last_Byte == USART_FRAMETAIL) && (pframe->Rec_Flag) ) {
-		//收到结束符
+		//收到结束�?
         if(pframe->Offset >= 2)
             pframe->Offset -= 2;
 		pframe->Check_Sum -= (USART_FRAMETAIL + *(pbuf + pframe->Offset));
@@ -95,7 +95,7 @@ boolean USART_RecFrame(uint8_t data, uint8_t *pbuf, uint16_t *iolen)
 /*******************************************************************************
 * Function Name  : USART_SendFrame
 * Description    : 打包函数
-* Input          : data所指向的数据
+* Input          : data所指向的数�?
 * Output         : 打包好的数据存入pBuf，数据长度为n
 * Return         : None
 *******************************************************************************/
@@ -104,9 +104,9 @@ boolean USART_SendFrame(uint8_t *data, uint8_t *pbuf, uint16_t *iolen)
 	uint16_t i;
 	uint8_t check_sum = 0;           		//从这里看来，txsize应该是打包后的最大的数据量，所以，这个可以设置为TX_MEM_SIZE
 	uint8_t *pdata_buf = pbuf;
-	uint8_t ident_len = 0;			//标示符长度
+	uint8_t ident_len = 0;			//标示符长�?
 
-	if(*iolen > TX_MAX_SIZE - ident_len)	//当发送的数据长度超过发送SIZE - 包头字节数 - 包尾字节数 - 校验位字节数
+	if(*iolen > TX_MAX_SIZE - ident_len)	//当发送的数据长度超过发送SIZE - 包头字节�?- 包尾字节�?- 校验位字节数
 		return false;
 	
 	*pdata_buf++ = USART_FRAMEHEAD;		//加头
@@ -125,7 +125,7 @@ boolean USART_SendFrame(uint8_t *data, uint8_t *pbuf, uint16_t *iolen)
 		data ++;
 	}
 
-	//校验和
+	//校验�?
 	if ( (check_sum == USART_FRAMECTRL) || (check_sum == USART_FRAMEHEAD) || (check_sum == USART_FRAMETAIL) ) {
 		ident_len++;			//溢出判断
 		if(*iolen > TX_MAX_SIZE - ident_len)
@@ -242,25 +242,39 @@ void USART_SendPackage(void)
 	static int32_t count = -1000;
 
 	count++;
-	if(count < 10)
+	if(count < 30)
 	{
 		return;
 	}
 	count = 0;
 
 	//speed
-//	*(int16_t*)&buff[0] = g_servo_info.cur_speed;
-//	*(int16_t*)&buff[2] = g_servo_info.cur_pos/10;
-//	*(int16_t*)&buff[4] = g_servo_info.posmode_tarspeed;
-//	*(int16_t*)&buff[6] = g_servo_info.tar_pos/10;
-//	COMSendBuffer(0x00660001, buff, 8);
+	*(int16_t*)&buff[0] = g_servo_info.cur_speed;
+	*(int16_t*)&buff[2] = g_servo_info.cur_pos/10;
+	*(int16_t*)&buff[4] = g_servo_info.posmode_tarspeed;
+	*(int16_t*)&buff[6] = g_servo_info.tar_pos/10;
+	COMSendBuffer(0x00660001, buff, 8);
 
 	//detect
 	*(int16_t*)&buff[0] = g_servo_info.voltage;
 	*(int16_t*)&buff[2] = g_servo_info.current;
 	*(int16_t*)&buff[4] = g_servo_info.temperature;
-	*(int16_t*)&buff[6] = g_servo_info.torquemode_tartorque;//g_servo_info.limit_current;
+	*(int16_t*)&buff[6] = g_servo_info.over_current;
 	COMSendBuffer(0x00660002, buff, 8);
+
+	//torque
+	*(int16_t*)&buff[0] = g_servo_info.current;
+	*(int16_t*)&buff[2] = g_servo_info.tar_torque;
+	*(int16_t*)&buff[4] = 0;
+	*(int16_t*)&buff[6] = 0;
+	COMSendBuffer(0x00660003, buff, 8);
+
+	//pwm
+	*(int16_t*)&buff[0] = pos_ctrl.output;
+	*(int16_t*)&buff[2] = speed_ctrl.output;
+	*(int16_t*)&buff[4] = torque_ctrl.output;
+	*(int16_t*)&buff[6] = g_servo_info.limit_pwm;
+	COMSendBuffer(0x00660004, buff, 8);
 
 #endif
 }
