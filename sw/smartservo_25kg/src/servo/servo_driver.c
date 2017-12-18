@@ -25,7 +25,7 @@
 #include "main.h"
 
 
-static int16_t s_driver_pwm = 0;
+int16_t s_driver_pwm = 0;
 MOTOR_CTRL_STATUS g_eSysMotionStatus = IDLE_MODE;  
 static int32_t limitcurrent_offset = 0;
 static int32_t limitcurrent_value = 0;
@@ -107,7 +107,20 @@ void servodriver_run_pwm(int16_t pwm)
   }
 }
 
-void servodriver_run_torque(int32_t angle,float speed,int32_t torque)
+void servodriver_run_abspos_torque(int32_t angle,float speed,int32_t torque)
+{
+	if(g_servo_info.errorid == 0)
+	{
+	  digitalWrite(SMART_SERVO_SLEEP,1);
+	  g_eSysMotionStatus = TORQUE_MODE;
+
+	  g_servo_info.tar_pos = angle*10;
+	  g_servo_info.tar_speed = constrain(abs_user(speed), -20, 20); 
+	  g_servo_info.tar_torque = constrain(torque, 0, MAX_TORQUE);
+  }
+}
+
+void servodriver_run_relativepos_torque(int32_t angle,float speed,int32_t torque)
 {
 	if(g_servo_info.errorid == 0)
 	{
@@ -116,7 +129,7 @@ void servodriver_run_torque(int32_t angle,float speed,int32_t torque)
 
 	  g_servo_info.tar_pos = g_servo_info.cur_pos + angle*10;
 	  g_servo_info.tar_speed = constrain(abs_user(speed), -20, 20); 
-	  g_servo_info.tar_torque = constrain((torque*4), 0, MAX_TORQUE);
+	  g_servo_info.tar_torque = constrain(torque, 0, MAX_TORQUE);
   }
 }
 
@@ -136,7 +149,7 @@ void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t pa
 
     g_servo_info.tar_speed = constrain(param1, -MAX_TAR_SPEED, MAX_TAR_SPEED); 
     g_servo_info.tar_pos = g_servo_info.cur_pos + param2;
-    g_servo_info.tar_torque = constrain((param3*4), 0, MAX_TORQUE); 
+    g_servo_info.tar_torque = constrain(param3, 0, MAX_TORQUE); 
     //g_servo_info.tar_pwm = constrain(param3, -MAX_OUTPUT_PWM, MAX_OUTPUT_PWM); 
   }
 }

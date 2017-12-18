@@ -167,7 +167,7 @@ static MOTOR_CTRL_STATUS motor_pos_mode(void *param)
     speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
     speed_ctrl.output = 0;
     speed_ctrl.Kp = 200;
-    speed_ctrl.Ki = 20;
+    speed_ctrl.Ki = 10;
 
     pos_ctrl.output = 0;
     pos_ctrl.Kp = 1;
@@ -195,18 +195,18 @@ static MOTOR_CTRL_STATUS motor_pos_mode(void *param)
 
   //pos pid
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-  LIMIT_DEATH(pos_error, 10);
+  LIMIT_DEATH(pos_error, 5);
   pos_error = constrain(pos_error,-20,20);
   pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
   pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
   pos_ctrl.last_error = pos_error;
 
   //speed pid
-  H = 650;
+  H = 1000;
   K = MAX_TAR_SPEED;
   A = (float)(-MAX_TAR_SPEED) / pow(H,2);
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-  LIMIT_DEATH(pos_error, 10);
+  LIMIT_DEATH(pos_error, 5);
   abspos_error = abs_user(pos_error);
   if(abspos_error == 0)
   {
@@ -299,7 +299,7 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
 
   //pos pid
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-  LIMIT_DEATH(pos_error, 10);
+  LIMIT_DEATH(pos_error, 5);
   pos_error = constrain(pos_error,-20,20);
   pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
   pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
@@ -310,7 +310,7 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
   K = MAX_TAR_SPEED;
   A = (float)(-MAX_TAR_SPEED) / pow(H,2);
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-  LIMIT_DEATH(pos_error, 10);
+  LIMIT_DEATH(pos_error, 5);
   abspos_error = abs_user(pos_error);
   if(abspos_error == 0)
   {
@@ -345,12 +345,12 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
 
 #if 0
   //torque pid
-  torque_error = abs_user(g_servo_info.tar_torque - g_servo_info.current);
+  torque_error = abs_user(g_servo_info.tar_torque*4 - g_servo_info.current);
 
   torque_ctrl.Kp = 500;
   torque_ctrl.Ki = 5;
 
-  if(g_servo_info.current > g_servo_info.tar_torque)
+  if(g_servo_info.current > g_servo_info.tar_torque*4)
   {
 		torque_error = constrain(torque_error,-200,200);
 		torque_ctrl.integral += torque_error;
@@ -359,7 +359,7 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
 		torque_ctrl.output = constrain(torque_ctrl.output,-(int32_t)(1500), (int32_t)(1500));
 
   }
-  else if(g_servo_info.current > (int32_t)(g_servo_info.tar_torque-20))//20mA滞回
+  else if(g_servo_info.current > (int32_t)(g_servo_info.tar_torque*4-20))//20mA滞回
   {
   }
   else
@@ -384,7 +384,7 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
 #else
   s_output_pwm = pos_ctrl.output + speed_ctrl.output;
   s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
-  servodriver_set_limitcurrent(g_servo_info.tar_torque);
+  servodriver_set_limitcurrent(g_servo_info.tar_torque*4);
   servodriver_set_pwm(s_output_pwm);
 #endif
 
@@ -493,20 +493,15 @@ void motor_process(void)
     return;
   }
 
-  //如果状态发送改变
   if(last_motion_status != g_eSysMotionStatus) 
   {
-    //记录上次平衡标志
     last_motion_status = g_eSysMotionStatus;
-
-    //设置状态发送改变
     s_bMotionStatusChanged = TRUE;
   }
 
   //执行函数
   g_eSysMotionStatus = MotionProcessors[g_eSysMotionStatus].motion_control(&(MotionProcessors[g_eSysMotionStatus].param));
 
-  //执行完函数后，清除状态变化标志
   s_bMotionStatusChanged = FALSE;	
 }
 

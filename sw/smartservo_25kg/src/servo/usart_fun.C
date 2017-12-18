@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define  SUPPORT_MY_DEBUG		1
+#define  SUPPORT_MY_DEBUG		0
 
 #define RX_MAX_SIZE		50
 #define TX_MAX_SIZE		50
@@ -232,6 +232,7 @@ void USART_SendPackage(void)
 #if SUPPORT_MY_DEBUG
 	extern STRUCT_PID speed_ctrl;
 	extern STRUCT_PID pos_ctrl;
+  extern STRUCT_PID torque_ctrl;
 	extern int32_t s_output_pwm;
 	extern int32_t target_speed;
 	extern float NTC;
@@ -264,7 +265,7 @@ void USART_SendPackage(void)
 
 	//torque
 	*(int16_t*)&buff[0] = g_servo_info.current;
-	*(int16_t*)&buff[2] = g_servo_info.tar_torque;
+	*(int16_t*)&buff[2] = g_servo_info.tar_torque*4;
 	*(int16_t*)&buff[4] = 0;
 	*(int16_t*)&buff[6] = 0;
 	COMSendBuffer(0x00660003, buff, 8);
@@ -273,7 +274,7 @@ void USART_SendPackage(void)
 	*(int16_t*)&buff[0] = pos_ctrl.output;
 	*(int16_t*)&buff[2] = speed_ctrl.output;
 	*(int16_t*)&buff[4] = torque_ctrl.output;
-	*(int16_t*)&buff[6] = g_servo_info.limit_pwm;
+	*(int16_t*)&buff[6] = s_driver_pwm;//g_servo_info.limit_pwm; g_servo_info.errorid ;//
 	COMSendBuffer(0x00660004, buff, 8);
 
 #endif

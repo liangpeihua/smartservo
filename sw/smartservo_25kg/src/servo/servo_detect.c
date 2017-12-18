@@ -43,7 +43,7 @@
 #define OVER_LOADMAN_ERR            (1<<7)//过载报警
 
 //监测阈值
-#define OVER_CURRENT_THSD              3000       //1mA,过流保护阈值
+#define OVER_CURRENT_THSD              4000       //1mA,过流保护阈值
 #define CURR_HYSTERESIS_THSD           200        //100mA,滞回电流
 
 #define OVER_TEMPERATURE_THSD          70         //°C,mos管过温保护阈值
@@ -78,24 +78,21 @@ SpiFlashOpResult servodet_set_angle_zero(void)
   g_servo_info.tar_pos = g_servo_info.cur_pos = 0;
   g_servo_info.circular_count = 0;
 
+  servodriver_run_idle();
   return result;
 }
 
 static void servodet_pos_handle(void)
 {
-  static boolean first_run = true;
   static int32_t pre_pos = 0;
   int32_t cur_pos;
 
-  if(first_run)
-  {
-    first_run = false;
-    pre_pos = cur_pos = mp9960_read_raw_angle();;
-  }
-  else
-  {
-    cur_pos = mp9960_read_raw_angle();
-  }
+#if 1 //dir
+  cur_pos = RAW_ANGLE_MAX_INT-1 - mp9960_read_raw_angle();
+#else
+  cur_pos =  mp9960_read_raw_angle();
+#endif
+  cur_pos = cur_pos - g_servo_info.angle_zero_offset;
 
   if(abs_user(cur_pos - pre_pos) > RAW_ANGLE_MAX_INT/2)
   {
@@ -109,10 +106,10 @@ static void servodet_pos_handle(void)
     }
   }
   pre_pos = cur_pos;
-  cur_pos = cur_pos - g_servo_info.angle_zero_offset;
+
   cur_pos = g_servo_info.circular_count * RAW_ANGLE_MAX_INT + cur_pos;
 
-  g_servo_info.cur_pos = -1 * (cur_pos * 3600 / 4096);//0.1°
+  g_servo_info.cur_pos = (cur_pos * 3600 / 4096);//0.1°
 }
 
 static void servodet_speed_handle(void)
@@ -151,7 +148,7 @@ static void servodet_voltage_handle(void)
 
   cur_value = analogRead(SMART_SERVO_VOL_AD);
 
-  cur_value = cur_value * 349 / 100 + 150;   //voltage_temp = value*(3.3/4096)*(130/30),error=150mv
+  cur_value = cur_value * 349 / 100 + 0;   //voltage_temp = value*(3.3/4096)*(130/30),error=0mv
   if(g_servo_info.current > 0){
     cur_value = cur_value + (uint32_t)(g_servo_info.current* 500/1000);//500mΩ
   }
@@ -222,22 +219,23 @@ static void servodet_overcurrent_handle(void)
 {
   static uint16_t over_count = 0;
   static int32_t value;
+  //uint16_t cur_pwmvalue = abs_user( servodriver_get_pwmvalue() );
 
   value=	analogRead(SMART_SERVO_CURR_AD);
 
   //1V -> 1A, voltage = ADC*(3.3/4096)，amp=75
-  value = (int32_t)((value - g_servo_info.current_zero_offset)*3300/4096 / 0.375);//0.375
+  value = (int32_t)((value - g_servo_info.current_zero_offset)*3300/4096 / 0.25);//0.3
   if(value < 0){
     value = 0;
   }
   g_servo_info.current = (int32_t)(value*0.1 + g_servo_info.current*0.9); 
 
-  if(abs_user(g_servo_info.current) >  g_servo_info.over_current)
+  if(g_servo_info.current > g_servo_info.over_current)
   {
     over_count++;
-    if(over_count > 20)//0.2s
+    if(over_count > 250)//0.5s
     {
-      over_count = 20;
+      over_count = 250;
       g_servo_info.errorid |= OVER_CURRENT_ERR;
     } 		 
   }
@@ -251,7 +249,7 @@ static void servodet_overcurrent_handle(void)
   } 
 }
 
-static void servodet_calc_handle(void)
+static void servodet_calc_thresold_handle(void)
 {
 #define LIMIT_MAX_VOLTAGE		7800//7400		
   int32_t over_current;
@@ -261,10 +259,11 @@ static void servodet_calc_handle(void)
   //电压7.4V测试：堵转电流和温度的关系
   //y = -17.353x + 4161.6
   //max_current(7.4V) = -17.353*temp + 4161.6, 单位mA
-  over_current_7_4v =  (int32_t)(-35*g_servo_info.temperature + 4000);
+  over_current_7_4v =  (int32_t)(-35*g_servo_info.temperature + 5000);
   over_current_7_4v = constrain(over_current_7_4v, 0, OVER_CURRENT_THSD);
 
-  over_current = (int32_t)(g_servo_info.voltage * over_current_7_4v) / LIMIT_MAX_VOLTAGE;
+  //over_current = (int32_t)(LIMIT_MAX_VOLTAGE * over_current_7_4v) / g_servo_info.voltage;
+  over_current = (int32_t)(9000 * over_current_7_4v) / g_servo_info.voltage;
   g_servo_info.over_current = constrain(over_current, 500, over_current_7_4v);
 
   limit_pwm =  LIMIT_MAX_VOLTAGE * MAX_OUTPUT_PWM / g_servo_info.voltage; //7.4v -> max output
@@ -306,11 +305,10 @@ static void servodet_stall_handle(void)
   static int32_t pre_pos = 0;
   uint16_t cur_pwmvalue = abs_user( servodriver_get_pwmvalue() );
 
-  if( (cur_pwmvalue > (MAX_OUTPUT_PWM/5)) &&
+  if( (cur_pwmvalue > (MAX_OUTPUT_PWM/3)) &&
       (((g_eSysMotionStatus==SPEED_MODE) && (g_servo_info.tar_speed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ||
       ((g_eSysMotionStatus==PWM_MODE) && (g_servo_info.tar_pwm!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) || 
-      ((g_eSysMotionStatus==POS_MODE) && (g_servo_info.posmode_tarspeed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ||
-      ((g_eSysMotionStatus==TORQUE_MODE) && (g_servo_info.posmode_tarspeed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ))
+      ((g_eSysMotionStatus==POS_MODE) && (g_servo_info.posmode_tarspeed!=0 ) && (abs_user(pre_pos-g_servo_info.cur_pos)<30)) ))
   {
     stall_count++;
     if(stall_count > 150)//1.5s
@@ -355,13 +353,12 @@ void servodet_process(void)
       servodet_temperature_handle();
       break;
     case 3:
-      servodet_calc_handle();
+      servodet_calc_thresold_handle();
       break;
     case 4:
       servodet_stall_handle();
       break; 
     case 5:
-      servodet_overcurrent_handle();
       servodet_nfault_handle();
       state = 0;
       break;
@@ -370,6 +367,7 @@ void servodet_process(void)
       break;    
   }
 
+	servodet_overcurrent_handle();
   servodet_pos_handle();
   servodet_speed_handle();
   USART_SendPackage();

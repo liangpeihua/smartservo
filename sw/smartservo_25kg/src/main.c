@@ -170,7 +170,7 @@ void entry_update(void *arg)
   CLK->AHBCLK |= CLK_AHBCLK_ISP_EN_Msk;
   FMC_EnableLDUpdate();
   FMC_Erase(FIRMWARE_CRC32_STORE_ADDRESS);
-  FMC_Erase(FIRMWARE_CRC32_STORE_DUP_ADDRESS);
+  //FMC_Erase(FIRMWARE_CRC32_STORE_DUP_ADDRESS);
   FMC_DisableLDUpdate();
   SYS_ResetChip();
 }

@@ -43,7 +43,7 @@
 
 #define MAX_OUTPUT_PWM		1024
 #define MAX_TAR_SPEED 	 (60)    // ---- 0.16sec/60   (28.57 rpm)    0.200s/60°
-#define MAX_TORQUE				(1024)
+#define MAX_TORQUE				255
 
 typedef enum
 {
@@ -63,7 +63,8 @@ void servodriver_run_abs_pos(int32_t angle,float speed);
 void servodriver_run_relative_pos(int32_t angle,float speed);
 void servodriver_run_speed(float speed);
 void servodriver_run_pwm(int16_t pwm);
-void servodriver_run_torque(int32_t angle,float speed,int32_t torque);
+void servodriver_run_abspos_torque(int32_t angle,float speed,int32_t torque);
+void servodriver_run_relativepos_torque(int32_t angle,float speed,int32_t torque);
 void servodriver_run_error(void);
 void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t param3);
 int16_t servodriver_get_pwmvalue(void);

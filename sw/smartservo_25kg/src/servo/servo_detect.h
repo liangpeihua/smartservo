@@ -36,7 +36,7 @@ typedef struct
   int32_t tar_speed;				//转速,1RPM/min
   int32_t tar_pos;					//位置,1°
   int32_t tar_pwm;
-  int32_t tar_torque;				//
+  int32_t tar_torque;				//4mA
   int32_t angle_zero_offset;
   int32_t current_zero_offset;
   int32_t temperature;
