@@ -32,6 +32,10 @@
 #define SMART_SERVO_VOL_AD    	P1_5
 #define SMART_SERVO_CURR_AD   	P1_4
 
+//speed dir
+#define SPEED_DIR   1 //0-顺时针为正，1-逆时针为正，
+#define CIRCULAR_ANGLE  3600 //0.1°
+
 //故障ID
 #define NONE_ERROR                   0
 #define OVER_VLOT_ERR          			(1<<1) //过压
@@ -51,65 +55,79 @@
 
 //static STRUCT_PID current_ctrl = {0};
 SERVO_DETECT g_servo_info = {FALSE,0};
-
+int32_t pre_pos = 0;
+int32_t cur_pos;
 void servodet_init(void)
 {
   servodriver_init();
   memset((uint8_t*)&g_servo_info, 0, sizeof(g_servo_info));
   delay(20);
   g_servo_info.current_zero_offset = analogRead(SMART_SERVO_CURR_AD);
-  g_servo_info.angle_zero_offset = (int16_t)flash_read_angle_offset();
+  g_servo_info.angle_zero_offset = (int32_t)flash_read_angle_offset();
+  pre_pos = 0;
 }
 
 SpiFlashOpResult servodet_set_angle_zero(void)
 {
-  int value = -1;
+  int32_t value = -1;
   SpiFlashOpResult result = SPI_FLASH_RESULT_OK;
+
+#if SPEED_DIR //dir
+  value = RAW_ANGLE_MAX_INT-1 - mp9960_read_raw_angle();
+#else
   value =  mp9960_read_raw_angle();
+#endif
+
   if(flash_write_angle_offset((uint32_t)value) == SPI_FLASH_RESULT_OK)
   {
     g_servo_info.angle_zero_offset = value;
+    pre_pos = 0;
+    g_servo_info.tar_pos = g_servo_info.cur_pos = 0;
+    g_servo_info.circular_count = 0;
     result = SPI_FLASH_RESULT_OK;
   }
   else
   {
     result = SPI_FLASH_RESULT_ERR;
   }
-  g_servo_info.tar_pos = g_servo_info.cur_pos = 0;
-  g_servo_info.circular_count = 0;
-
   servodriver_run_idle();
   return result;
 }
 
 static void servodet_pos_handle(void)
 {
-  static int32_t pre_pos = 0;
-  int32_t cur_pos;
-
-#if 1 //dir
+#if SPEED_DIR //dir
   cur_pos = RAW_ANGLE_MAX_INT-1 - mp9960_read_raw_angle();
 #else
   cur_pos =  mp9960_read_raw_angle();
 #endif
-  cur_pos = cur_pos - g_servo_info.angle_zero_offset;
 
-  if(abs_user(cur_pos - pre_pos) > RAW_ANGLE_MAX_INT/2)
+  cur_pos = cur_pos - g_servo_info.angle_zero_offset;
+  cur_pos = (cur_pos * CIRCULAR_ANGLE / RAW_ANGLE_MAX_INT);//0.1°
+
+  if(cur_pos > (CIRCULAR_ANGLE/2-1))
   {
-    if((pre_pos > RAW_ANGLE_MAX_INT/2) && (cur_pos < RAW_ANGLE_MAX_INT/2))
+    cur_pos -= CIRCULAR_ANGLE;
+  }
+  else if(cur_pos < -(CIRCULAR_ANGLE/2))
+  {
+    cur_pos += CIRCULAR_ANGLE;
+  }
+
+  if(abs_user(cur_pos - pre_pos) > (CIRCULAR_ANGLE/2))
+  {
+    if((pre_pos > 0) && (cur_pos < 0))
     {
       g_servo_info.circular_count++;
     }
-    else if((pre_pos < RAW_ANGLE_MAX_INT/2) && (cur_pos > RAW_ANGLE_MAX_INT/2))
+    else if((pre_pos < 0) && (cur_pos > 0))
     {
       g_servo_info.circular_count--;
     }
   }
   pre_pos = cur_pos;
 
-  cur_pos = g_servo_info.circular_count * RAW_ANGLE_MAX_INT + cur_pos;
-
-  g_servo_info.cur_pos = (cur_pos * 3600 / 4096);//0.1°
+  g_servo_info.cur_pos = (g_servo_info.circular_count * CIRCULAR_ANGLE + cur_pos);//0.1°
 }
 
 static void servodet_speed_handle(void)

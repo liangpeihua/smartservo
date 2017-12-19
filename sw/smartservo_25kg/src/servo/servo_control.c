@@ -157,7 +157,6 @@ static MOTOR_CTRL_STATUS motor_pos_mode(void *param)
   int32_t pos_error;
   int32_t abspos_error;
   int32_t target_speed;
-  static int32_t pre_tar_pos = 0;
   float A;
   int32_t H;
   int32_t K;
@@ -170,27 +169,13 @@ static MOTOR_CTRL_STATUS motor_pos_mode(void *param)
     speed_ctrl.Ki = 10;
 
     pos_ctrl.output = 0;
-    pos_ctrl.Kp = 1;
-    pos_ctrl.Kd = 2;
-
-    pre_tar_pos = g_servo_info.tar_pos;
+    pos_ctrl.Kp = 10;
+    pos_ctrl.Kd = 20;
   }
 
   if(g_servo_info.errorid != 0)
   {
     return ERROR_MODE;
-  }
-
-  if(pre_tar_pos != g_servo_info.tar_pos)
-  {
-    pos_ctrl.Kp = 1;
-    pos_ctrl.Kd = 2;
-    pre_tar_pos = g_servo_info.tar_pos;
-  }
-  else if(abs_user(pos_error) < 10)
-  {
-    pos_ctrl.Kp = 10;
-    pos_ctrl.Kd = 20;
   }
 
   //pos pid
@@ -256,7 +241,6 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
   int32_t abspos_error;
   int32_t target_speed;
   int32_t torque_error;
-  static int32_t pre_tar_pos = 0;
   float A;
   int32_t H;
   int32_t K;
@@ -266,35 +250,21 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
     speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
     speed_ctrl.output = 0;
     speed_ctrl.Kp = 200;
-    speed_ctrl.Ki = 20;
+    speed_ctrl.Ki = 10;
 
     pos_ctrl.output = 0;
-    pos_ctrl.Kp = 1;
-    pos_ctrl.Kd = 2;
+    pos_ctrl.Kp = 10;
+    pos_ctrl.Kd = 20;
 
     torque_ctrl.integral = 0;
     torque_ctrl.output = 0;
     torque_ctrl.Kp = 100;
     torque_ctrl.Ki = 2;
-
-    pre_tar_pos = g_servo_info.tar_pos;
   }
 
   if(g_servo_info.errorid != 0)
   {
     return ERROR_MODE;
-  }
-
-  if(pre_tar_pos != g_servo_info.tar_pos)
-  {
-    pos_ctrl.Kp = 1;
-    pos_ctrl.Kd = 2;
-    pre_tar_pos = g_servo_info.tar_pos;
-  }
-  else if(abs_user(pos_error) < 10)
-  {
-    pos_ctrl.Kp = 10;
-    pos_ctrl.Kd = 20;
   }
 
   //pos pid
@@ -306,7 +276,7 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
   pos_ctrl.last_error = pos_error;
 
   //speed pid
-  H = 650;
+  H = 1000;
   K = MAX_TAR_SPEED;
   A = (float)(-MAX_TAR_SPEED) / pow(H,2);
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;

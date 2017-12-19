@@ -148,7 +148,7 @@ void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t pa
     g_eSysMotionStatus = (MOTOR_CTRL_STATUS)mode;
 
     g_servo_info.tar_speed = constrain(param1, -MAX_TAR_SPEED, MAX_TAR_SPEED); 
-    g_servo_info.tar_pos = g_servo_info.cur_pos + param2;
+    g_servo_info.tar_pos = param2;//g_servo_info.cur_pos + param2;
     g_servo_info.tar_torque = constrain(param3, 0, MAX_TORQUE); 
     //g_servo_info.tar_pwm = constrain(param3, -MAX_OUTPUT_PWM, MAX_OUTPUT_PWM); 
   }
