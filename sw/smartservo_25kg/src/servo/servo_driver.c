@@ -69,7 +69,9 @@ void servodriver_run_abs_pos(int32_t angle,float speed)
     g_eSysMotionStatus = POS_MODE;
 
     g_servo_info.tar_pos = angle*10;
-    g_servo_info.tar_speed = constrain(abs_user(speed), -MAX_TAR_SPEED, MAX_TAR_SPEED); 
+    g_servo_info.tar_speed = constrain(abs_user(speed), -MAX_TAR_SPEED, MAX_TAR_SPEED);
+
+    g_servo_info.reach_tar_pos = FALSE;
   }
 }
 
@@ -82,6 +84,8 @@ void servodriver_run_relative_pos(int32_t angle,float speed)
 
     g_servo_info.tar_pos = g_servo_info.cur_pos + angle*10;
     g_servo_info.tar_speed = constrain(abs_user(speed), -MAX_TAR_SPEED, MAX_TAR_SPEED);
+
+    g_servo_info.reach_tar_pos = FALSE;
   }
 }
 
@@ -111,12 +115,14 @@ void servodriver_run_abspos_torque(int32_t angle,float speed,int32_t torque)
 {
 	if(g_servo_info.errorid == 0)
 	{
-	  digitalWrite(SMART_SERVO_SLEEP,1);
-	  g_eSysMotionStatus = TORQUE_MODE;
+    digitalWrite(SMART_SERVO_SLEEP,1);
+    g_eSysMotionStatus = TORQUE_MODE;
 
-	  g_servo_info.tar_pos = angle*10;
-	  g_servo_info.tar_speed = constrain(abs_user(speed), -20, 20); 
-	  g_servo_info.tar_torque = constrain(torque, 0, MAX_TORQUE);
+    g_servo_info.tar_pos = angle*10;
+    g_servo_info.tar_speed = constrain(abs_user(speed), -20, 20); 
+    g_servo_info.tar_torque = constrain(torque, 0, MAX_TORQUE);
+
+    g_servo_info.reach_tar_pos = FALSE;
   }
 }
 
@@ -124,12 +130,14 @@ void servodriver_run_relativepos_torque(int32_t angle,float speed,int32_t torque
 {
 	if(g_servo_info.errorid == 0)
 	{
-	  digitalWrite(SMART_SERVO_SLEEP,1);
-	  g_eSysMotionStatus = TORQUE_MODE;
+    digitalWrite(SMART_SERVO_SLEEP,1);
+    g_eSysMotionStatus = TORQUE_MODE;
 
-	  g_servo_info.tar_pos = g_servo_info.cur_pos + angle*10;
-	  g_servo_info.tar_speed = constrain(abs_user(speed), -20, 20); 
-	  g_servo_info.tar_torque = constrain(torque, 0, MAX_TORQUE);
+    g_servo_info.tar_pos = g_servo_info.cur_pos + angle*10;
+    g_servo_info.tar_speed = constrain(abs_user(speed), -20, 20); 
+    g_servo_info.tar_torque = constrain(torque, 0, MAX_TORQUE);
+
+    g_servo_info.reach_tar_pos = FALSE;
   }
 }
 

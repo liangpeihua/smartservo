@@ -1860,3 +1860,23 @@ void check_device_state(void *arg)
   write_byte_uart0(checksum);
   write_byte_uart0(END_SYSEX);
 }
+
+void check_whether_reach_the_postion(void)
+{
+	uint8_t checksum;
+	uint8_t reach_pos_flag = 1;
+
+	if(g_servo_info.reach_tar_pos)
+	
+	//response mesaage to UART0
+	write_byte_uart0(START_SYSEX);
+	write_byte_uart0(device_id);
+	write_byte_uart0(SMART_SERVO);
+	write_byte_uart0(CHECK_WHETHER_REACH_THE_SET_POSITION);
+	write_byte_uart0((uint8_t)reach_pos_flag);
+	checksum = (device_id + SMART_SERVO + CHECK_WHETHER_REACH_THE_SET_POSITION+(uint8_t)reach_pos_flag);
+	checksum = checksum & 0x7f;
+	write_byte_uart0(checksum);
+	write_byte_uart0(END_SYSEX);
+}
+
