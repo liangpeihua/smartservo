@@ -1,4 +1,6 @@
----- g_servo_info.limit_current Matches (3 in 3 files) ----
-servodet_limitcurrent_handle in servo_detect.c (src\servo) : 	g_servo_info.limit_current = limit_current;
-servodriver_set_pwm in servo_driver.c (src\servo) :   set_pwm = servodriver_limitcurrent(g_servo_info.current, g_servo_info.limit_current, pwm);
-USART_SendPackage in usart_fun.C (src\servo) : 	*(int16_t*)&buff[6] = g_servo_info.limit_current;
+---- over_current Matches (4 in 3 files) ----
+
+servodet_overcurrent_handle in servo_detect.c (src\servo) :   if(g_servo_info.current > g_servo_info.over_current)
+servodet_calc_thresold_handle in servo_detect.c (src\servo) :   g_servo_info.over_current = constrain(over_current, 500, over_current_7_4v);
+{anonSERVO_DETECT} in servo_detect.h (src\servo) :   int32_t over_current;
+USART_SendPackage in usart_fun.C (src\servo) : 	*(int16_t*)&buff[6] = g_servo_info.over_current;

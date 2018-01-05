@@ -26,7 +26,7 @@
 
 
 int16_t s_driver_pwm = 0;
-MOTOR_CTRL_STATUS g_eSysMotionStatus = IDLE_MODE;  
+MOTOR_CTRL_STATUS g_motion_status = IDLE_MODE;  
 static int32_t limitcurrent_offset = 0;
 static int32_t limitcurrent_value = 0;
 
@@ -55,7 +55,7 @@ void servodriver_init(void)
 void servodriver_run_idle(void)
 {
   digitalWrite(SMART_SERVO_SLEEP,0);
-  g_eSysMotionStatus = IDLE_MODE;
+  g_motion_status = IDLE_MODE;
   s_driver_pwm = 0;
   limitcurrent_offset = 0;
   limitcurrent_value = 0;
@@ -66,7 +66,7 @@ void servodriver_run_abs_pos(int32_t angle,float speed)
   if(g_servo_info.errorid == 0)
   {
     digitalWrite(SMART_SERVO_SLEEP,1);
-    g_eSysMotionStatus = POS_MODE;
+    g_motion_status = POS_MODE;
 
     g_servo_info.tar_pos = angle*10;
     g_servo_info.tar_speed = constrain(abs_user(speed), -MAX_TAR_SPEED, MAX_TAR_SPEED);
@@ -80,7 +80,7 @@ void servodriver_run_relative_pos(int32_t angle,float speed)
   if(g_servo_info.errorid == 0)
   {
     digitalWrite(SMART_SERVO_SLEEP,1);
-    g_eSysMotionStatus = POS_MODE;
+    g_motion_status = POS_MODE;
 
     g_servo_info.tar_pos = g_servo_info.cur_pos + angle*10;
     g_servo_info.tar_speed = constrain(abs_user(speed), -MAX_TAR_SPEED, MAX_TAR_SPEED);
@@ -94,7 +94,7 @@ void servodriver_run_speed(float speed)
   if(g_servo_info.errorid == 0)
   {
     digitalWrite(SMART_SERVO_SLEEP,1);
-    g_eSysMotionStatus = SPEED_MODE;
+    g_motion_status = SPEED_MODE;
 
     g_servo_info.tar_speed = constrain(speed, -MAX_TAR_SPEED, MAX_TAR_SPEED); 
   }
@@ -105,7 +105,7 @@ void servodriver_run_pwm(int16_t pwm)
 	if(g_servo_info.errorid == 0)
 	{
 	  digitalWrite(SMART_SERVO_SLEEP,1);
-	  g_eSysMotionStatus = PWM_MODE;
+	  g_motion_status = PWM_MODE;
 
 	  g_servo_info.tar_pwm = constrain((pwm*4), -MAX_OUTPUT_PWM, MAX_OUTPUT_PWM); 
   }
@@ -116,7 +116,7 @@ void servodriver_run_abspos_torque(int32_t angle,float speed,int32_t torque)
 	if(g_servo_info.errorid == 0)
 	{
     digitalWrite(SMART_SERVO_SLEEP,1);
-    g_eSysMotionStatus = TORQUE_MODE;
+    g_motion_status = TORQUE_MODE;
 
     g_servo_info.tar_pos = angle*10;
     g_servo_info.tar_speed = constrain(abs_user(speed), -20, 20); 
@@ -128,10 +128,10 @@ void servodriver_run_abspos_torque(int32_t angle,float speed,int32_t torque)
 
 void servodriver_run_relativepos_torque(int32_t angle,float speed,int32_t torque)
 {
-	if(g_servo_info.errorid == 0)
-	{
+  if(g_servo_info.errorid == 0)
+  {
     digitalWrite(SMART_SERVO_SLEEP,1);
-    g_eSysMotionStatus = TORQUE_MODE;
+    g_motion_status = TORQUE_MODE;
 
     g_servo_info.tar_pos = g_servo_info.cur_pos + angle*10;
     g_servo_info.tar_speed = constrain(abs_user(speed), -20, 20); 
@@ -144,7 +144,7 @@ void servodriver_run_relativepos_torque(int32_t angle,float speed,int32_t torque
 void servodriver_run_error(void)
 {
   digitalWrite(SMART_SERVO_SLEEP,0);
-  g_eSysMotionStatus = ERROR_MODE;
+  g_motion_status = ERROR_MODE;
 }
 
 void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t param3)
@@ -152,8 +152,8 @@ void servodriver_run_debug(uint8_t mode,int32_t param1,int32_t param2,int32_t pa
   if(g_servo_info.errorid == 0)
   {
     digitalWrite(SMART_SERVO_SLEEP,1);
-    //g_eSysMotionStatus = DEBUG_MODE;
-    g_eSysMotionStatus = (MOTOR_CTRL_STATUS)mode;
+    //g_motion_status = DEBUG_MODE;
+    g_motion_status = (MOTOR_CTRL_STATUS)mode;
 
     g_servo_info.tar_speed = constrain(param1, -MAX_TAR_SPEED, MAX_TAR_SPEED); 
     g_servo_info.tar_pos = param2;//g_servo_info.cur_pos + param2;
@@ -184,14 +184,14 @@ void servodriver_set_limitcurrent(int32_t limit_current)
 * Description   : 限流处理
 * Input         : cur_current, limit_current,set_pwm
 * Output        : NONE
-* Return        : NONE
+* Return        : output pwm
 ************************************************************/
 int32_t servodriver_limitcurrent_protect(int32_t cur_current, int32_t limit_current,int32_t set_pwm)
 {
   int32_t output_pwm;
   int32_t step_len = 0;
 	
-  if(g_eSysMotionStatus == TORQUE_MODE)
+  if(g_motion_status == TORQUE_MODE)
   {
     if(cur_current > limit_current)
     {
@@ -258,8 +258,13 @@ void servodriver_set_pwm(int16_t pwm)
     pwm_canceled(SMART_SERVO_PWMB, 1);	//Enable PWM Output
     pwm_write(SMART_SERVO_PWMB,s_driver_pwm,0,MAX_OUTPUT_PWM);
 #elif MP6515
-    pwm_write(SMART_SERVO_ENBL,s_driver_pwm,0,MAX_OUTPUT_PWM);
-    digitalWrite(SMART_SERVO_PHASE,1);
+		#if SPEED_DIR //dir
+			pwm_write(SMART_SERVO_ENBL,s_driver_pwm,0,MAX_OUTPUT_PWM);
+			digitalWrite(SMART_SERVO_PHASE,0);
+		#else
+			pwm_write(SMART_SERVO_ENBL,s_driver_pwm,0,MAX_OUTPUT_PWM);
+			digitalWrite(SMART_SERVO_PHASE,1);
+		#endif
 #endif
   }
   else//ccw
@@ -269,8 +274,13 @@ void servodriver_set_pwm(int16_t pwm)
     pwm_canceled(SMART_SERVO_PWMA, 1);	//Enable PWM Output
     pwm_write(SMART_SERVO_PWMA,-s_driver_pwm,0,MAX_OUTPUT_PWM);
 #elif MP6515
-    pwm_write(SMART_SERVO_ENBL,-s_driver_pwm,0,MAX_OUTPUT_PWM);
-    digitalWrite(SMART_SERVO_PHASE,0);
+	#if SPEED_DIR //dir
+		pwm_write(SMART_SERVO_ENBL,-s_driver_pwm,0,MAX_OUTPUT_PWM);
+		digitalWrite(SMART_SERVO_PHASE,1);
+	#else
+		pwm_write(SMART_SERVO_ENBL,-s_driver_pwm,0,MAX_OUTPUT_PWM);
+		digitalWrite(SMART_SERVO_PHASE,0);
+	#endif
 #endif
   }
 }

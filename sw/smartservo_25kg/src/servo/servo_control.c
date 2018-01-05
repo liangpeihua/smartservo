@@ -6,7 +6,7 @@
  * @brief   
  *
  * \par Description
- * This file is servo control algorithm.
+ * This file is servo motion control algorithm.
  *
  * \par History:
  * <pre>
@@ -25,10 +25,10 @@
 #include "mp9960.h"
 #include "protocol.h"
 #include "main.h"
-#include "usart_Fun.h"
 	
-#define MAX_SPEED         60	//1rpm/min,实测最大转
+#define MAX_SPEED         62	//1rpm/min,实测最大转
 #define _PWM(Speed)      ((Speed) * MAX_OUTPUT_PWM / MAX_SPEED)	//拟合pwm
+#define DEATH_VALUE       5
 
 STRUCT_PID speed_ctrl = {0};
 STRUCT_PID pos_ctrl = {0};
@@ -36,7 +36,7 @@ STRUCT_PID torque_ctrl = {0};
 int32_t s_output_pwm = 0;
 
 //运动控制状态
-static boolean s_bMotionStatusChanged = TRUE;
+static boolean s_motion_changed = TRUE;
 
 static MOTOR_CTRL_STATUS motor_idle_mode(void *param);
 static MOTOR_CTRL_STATUS motor_pwm_mode(void *param);
@@ -51,9 +51,9 @@ extern void check_whether_reach_the_postion(void);
 //运动控制处理函数
 typedef struct
 {
-  MOTOR_CTRL_STATUS (*motion_control)(void *param);//运动控制模式
+  MOTOR_CTRL_STATUS (*motion_control)(void *param);//运动控制模式处理函数
   void (*ack_event)(void);//到达目标位置时，产生的事件
-  int32_t param; 
+  int32_t param;
 }MOTION_INFO;
 
 MOTION_INFO MotionProcessors[] = 
@@ -69,7 +69,7 @@ MOTION_INFO MotionProcessors[] =
 
 static MOTOR_CTRL_STATUS motor_idle_mode(void *param)
 {
-  if(s_bMotionStatusChanged)
+  if(s_motion_changed)
   {
     speed_ctrl.integral = 0;
     speed_ctrl.output = 0;
@@ -89,7 +89,7 @@ static MOTOR_CTRL_STATUS motor_pwm_mode(void *param)
   int32_t set_pwm = 0; 
   static int32_t step_len = 0;
 
-  if(s_bMotionStatusChanged)
+  if(s_motion_changed)
   {
     step_len = 30;
     s_output_pwm = 0;
@@ -125,12 +125,12 @@ static MOTOR_CTRL_STATUS motor_speed_mode(void *param)
 {
   int32_t speed_error;
 
-  if(s_bMotionStatusChanged)
+  if(s_motion_changed)
   {
-  speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
-  speed_ctrl.output = 0;
-  speed_ctrl.Kp = 200;
-  speed_ctrl.Ki = 20;
+    speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
+    speed_ctrl.output = 0;
+    speed_ctrl.Kp = 200;
+    speed_ctrl.Ki = 20;
   }
 
   if(g_servo_info.errorid != 0)
@@ -163,12 +163,12 @@ static MOTOR_CTRL_STATUS motor_pos_mode(void *param)
   int32_t H;
   int32_t K;
 
-  if(s_bMotionStatusChanged)
+  if(s_motion_changed)
   {
     speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
     speed_ctrl.output = 0;
     speed_ctrl.Kp = 200;
-    speed_ctrl.Ki = 10;
+    speed_ctrl.Ki = 17;
 
     pos_ctrl.output = 0;
     pos_ctrl.Kp = 10;
@@ -182,18 +182,18 @@ static MOTOR_CTRL_STATUS motor_pos_mode(void *param)
 
   //pos pid
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-  LIMIT_DEATH(pos_error, 5);
+  LIMIT_DEATH(pos_error, DEATH_VALUE);
   pos_error = constrain(pos_error,-20,20);
   pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
   pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
   pos_ctrl.last_error = pos_error;
 
   //speed pid
-  H = 1000;
+  H = 800;
   K = MAX_TAR_SPEED;
   A = (float)(-MAX_TAR_SPEED) / pow(H,2);
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-  LIMIT_DEATH(pos_error, 5);
+  LIMIT_DEATH(pos_error, DEATH_VALUE);
   abspos_error = abs_user(pos_error);
   if(abspos_error == 0)
   {
@@ -232,9 +232,6 @@ static MOTOR_CTRL_STATUS motor_pos_mode(void *param)
   speed_ctrl.output = constrain(speed_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
 
   s_output_pwm = pos_ctrl.output + speed_ctrl.output;
-  if(abs_user(s_output_pwm) < 50){
-    s_output_pwm = 0;
-  }
   s_output_pwm = constrain(s_output_pwm,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
   servodriver_set_pwm(s_output_pwm);
 
@@ -252,12 +249,12 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
   int32_t H;
   int32_t K;
 
-  if(s_bMotionStatusChanged)
+  if(s_motion_changed)
   {
     speed_ctrl.integral = _PWM(g_servo_info.cur_speed) / speed_ctrl.Ki;
     speed_ctrl.output = 0;
     speed_ctrl.Kp = 200;
-    speed_ctrl.Ki = 10;
+    speed_ctrl.Ki = 17;
 
     pos_ctrl.output = 0;
     pos_ctrl.Kp = 10;
@@ -276,18 +273,18 @@ static MOTOR_CTRL_STATUS  motor_torque_mode(void *param)
 
   //pos pid
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-  LIMIT_DEATH(pos_error, 5);
+  LIMIT_DEATH(pos_error, DEATH_VALUE);
   pos_error = constrain(pos_error,-20,20);
   pos_ctrl.output = pos_ctrl.Kp * pos_error + pos_ctrl.Kd * (pos_error - pos_ctrl.last_error);
   pos_ctrl.output = constrain(pos_ctrl.output,-g_servo_info.limit_pwm,g_servo_info.limit_pwm);
   pos_ctrl.last_error = pos_error;
 
   //speed pid
-  H = 1000;
+  H = 800;
   K = MAX_TAR_SPEED;
   A = (float)(-MAX_TAR_SPEED) / pow(H,2);
   pos_error = g_servo_info.tar_pos - g_servo_info.cur_pos;
-  LIMIT_DEATH(pos_error, 5);
+  LIMIT_DEATH(pos_error, DEATH_VALUE);
   abspos_error = abs_user(pos_error);
   if(abspos_error == 0)
   {
@@ -378,7 +375,7 @@ static MOTOR_CTRL_STATUS motor_error_mode(void *param)
   static int32_t step_len = 0;
   int32_t set_pwm = 0; 
   	
-  if(s_bMotionStatusChanged)
+  if(s_motion_changed)
   {
     speed_ctrl.integral = 0;
     speed_ctrl.output = 0;
@@ -426,7 +423,7 @@ static MOTOR_CTRL_STATUS motor_debug_mode(void *param)
   int32_t set_pwm = 0; 
   static int32_t step_len = 0;
 
-  if(s_bMotionStatusChanged)
+  if(s_motion_changed)
   {
     step_len = 5;
     s_output_pwm = 100;
@@ -475,15 +472,15 @@ void motor_process(void)
     return;
   }
 
-  if(last_motion_status != g_eSysMotionStatus) 
+  if(last_motion_status != g_motion_status) 
   {
-    last_motion_status = g_eSysMotionStatus;
-    s_bMotionStatusChanged = TRUE;
+    last_motion_status = g_motion_status;
+    s_motion_changed = TRUE;
   }
 
   //执行函数
-  g_eSysMotionStatus = MotionProcessors[g_eSysMotionStatus].motion_control(&(MotionProcessors[g_eSysMotionStatus].param));
+  g_motion_status = MotionProcessors[g_motion_status].motion_control(&(MotionProcessors[g_motion_status].param));
 
-  s_bMotionStatusChanged = FALSE;	
+  s_motion_changed = FALSE;	
 }
 

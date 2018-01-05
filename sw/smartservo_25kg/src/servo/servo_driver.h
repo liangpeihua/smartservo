@@ -26,6 +26,9 @@
 #define MP6515  0//10kg
 #define MP6528	1//25kg
 
+//speed dir
+#define SPEED_DIR   1 //0-顺时针为正，1-逆时针为正，
+
 //GPIO define 
 #if  MP6528
 #define SMART_SERVO_ENA 			P3_4
@@ -45,14 +48,15 @@
 #define MAX_TAR_SPEED 	 (60)    // ---- 0.16sec/60   (28.57 rpm)    0.200s/60°
 #define MAX_TORQUE				255
 
+//运动控制模式
 typedef enum
 {
     IDLE_MODE = 0,	
     PWM_MODE,
-    SPEED_MODE,		   
+    SPEED_MODE,
     POS_MODE,
-    TORQUE_MODE,  
-    ERROR_MODE,		       
+    TORQUE_MODE,
+    ERROR_MODE,
     DEBUG_MODE, //6
 } MOTOR_CTRL_STATUS;
 
@@ -75,7 +79,7 @@ void servodriver_set_pwm(int16_t pwm);
 
 
 
-extern MOTOR_CTRL_STATUS g_eSysMotionStatus;  
+extern MOTOR_CTRL_STATUS g_motion_status;  
 
 
 #endif/* __SMARTSERVO_H__ */

@@ -45,6 +45,7 @@
 #define CTL_UPDATE_FIRMWARE              0x05 // update firmware
 #define CTL_READ_HARDWARE_ID             0x06
 #define CTL_TRANSFER_FILE                0x07     // transfer file for updating firmware
+#define CTL_CHECK_DEVICE_STATE           0x08
 
 /* It can be replaced for makeblock own device */
 
@@ -78,6 +79,10 @@
   #define SET_SERVO_PWM_MOVE                       0x35
   #define GET_SERVO_CUR_ANGLE                      0x36
   #define SET_SERVO_BACK_ZERO                      0x37
+  #define SET_SERVO_ABSOLUTE_ANGLE_TURQUE          0x38
+  #define SET_SERVO_RELATIVE_ANGLE_TORQUE          0x39
+
+
 
   #define CHECK_WHETHER_REACH_THE_SET_POSITION     0x40
 
@@ -221,6 +226,6 @@ extern void parse_gcommand(char *cmd);
 
 extern void entry_update(void *arg);
 extern void read_hardware_id_response(void *arg);
-
+extern void check_device_state(void *arg);
 #endif
 

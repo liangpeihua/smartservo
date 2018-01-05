@@ -47,8 +47,8 @@ volatile uint8_t device_id_2 = 0;              //hardware ID, Uniqueness in a li
 volatile uint8_t device_type = CUSTOM_TYPE;  //device type, Indicates the type of module, 0x00 indicates no external module
 volatile uint8_t command_mode = FIRMATA_DATA_MODE;    //G_CODE_MODE,FIRMATA_DATA_MODE
 
-char mVersion[10] = "20.01.004";
-//char SmartServo_Version[7] = "001.01";
+char mVersion[10] = "20.01.006";
+
 
 union sysex_message sysex = {0};
 
@@ -292,6 +292,8 @@ static void process_general_cmd_response(void *arg)
       break;
     case CTL_READ_HARDWARE_ID:
       //read_hardware_id_response(NULL);
+	  case CTL_CHECK_DEVICE_STATE:
+      check_device_state(NULL);
     default:
       break;
   }
@@ -453,7 +455,7 @@ static void send_smart_angle(long angle_value)
   write_byte_uart0(END_SYSEX);
 }
 
-static void send_smart_temp(short temp_value)
+static void send_smart_temp(int32_t temp_value)
 {
   uint8_t checksum;
   float tmp_temp;
@@ -465,13 +467,14 @@ static void send_smart_temp(short temp_value)
   write_byte_uart0(GET_SERVO_TEMPERATURE);
   checksum = (device_id + SMART_SERVO + GET_SERVO_TEMPERATURE);
   //tmp_temp = calculate_temp(temp_value);
+	tmp_temp = temp_value;
   checksum += sendFloat(tmp_temp);
   checksum = checksum & 0x7f;
   write_byte_uart0(checksum);
   write_byte_uart0(END_SYSEX);
 }
 
-static void send_smart_speed(float speed_value)
+static void send_smart_speed(int32_t speed_value)
 {
   uint8_t checksum;
   float speed_temp = speed_value;
@@ -490,7 +493,7 @@ static void send_smart_speed(float speed_value)
   write_byte_uart0(END_SYSEX);
 }
 
-static void send_smart_voltage(int16_t vol_value)
+static void send_smart_voltage(uint32_t vol_value)
 {
   uint8_t checksum;
   float vol_temp;
@@ -509,7 +512,7 @@ static void send_smart_voltage(int16_t vol_value)
   write_byte_uart0(END_SYSEX);
 }
 
-static void send_smart_current(int16_t cur_value)
+static void send_smart_current(int32_t cur_value)
 {
   uint8_t checksum;
   float cur_temp;
@@ -521,6 +524,7 @@ static void send_smart_current(int16_t cur_value)
   write_byte_uart0(GET_SERVO_ELECTRIC_CURRENT);
   checksum = (device_id + SMART_SERVO + GET_SERVO_ELECTRIC_CURRENT);
   //cur_temp = calculate_current(cur_value);
+	cur_temp	= (float)cur_value;
   checksum += sendFloat(cur_temp);
   checksum = checksum & 0x7f;
   write_byte_uart0(checksum);
@@ -539,6 +543,7 @@ static void smart_servo_cmd_process(void *arg)
   uint16_t pos_value;
   int16_t speed_pwm;
   float speed;
+  uint8_t torque;
   float raw_angle;
   long pos_angle;
   cmd = sysex.val.value[0];
@@ -747,6 +752,28 @@ static void smart_servo_cmd_process(void *arg)
       }
       //uart_printf(UART0,"init_mode:%d,cur_pos:%ld,speed:%f\r\n",init_mode,smart_servo_cur_pos,speed);
       servodriver_run_abs_pos(0, speed);
+      SendErrorUart0(PROCESS_SUC);
+      break;
+    }
+    case SET_SERVO_ABSOLUTE_ANGLE_TURQUE:
+    {
+      raw_angle = readLong(sysex.val.value,1);
+      pos_angle = raw_angle;//round((RAW_ANGLE_MAX_INT * raw_angle)/360.0);
+      speed = readShort(sysex.val.value,6,true);
+      speed = constrain(speed,-20,20);
+      torque = readbyte(sysex.val.value,8);
+      servodriver_run_abspos_torque(pos_angle, speed, torque);
+      SendErrorUart0(PROCESS_SUC);
+      break;
+    }
+    case SET_SERVO_RELATIVE_ANGLE_TORQUE:
+    {
+      raw_angle = readLong(sysex.val.value,1);
+      pos_angle = raw_angle;//round((RAW_ANGLE_MAX_INT * raw_angle)/360.0);
+      speed = readShort(sysex.val.value,6,true);
+      speed = constrain(speed,-20,20);
+      torque = readbyte(sysex.val.value,8);
+      servodriver_run_relativepos_torque(pos_angle, speed, torque);
       SendErrorUart0(PROCESS_SUC);
       break;
     }
@@ -1606,32 +1633,32 @@ static void cmd_set_rgb_led(char *cmd)
 
 static void cmd_get_servo_pos(char *cmd)
 {
-  uart0_printf("G%d M5 P%d\r\n",device_id,g_servo_info.cur_pos/10.0);
+  uart0_printf("G%d M5 P%d\r\n",device_id,(int32_t)(g_servo_info.cur_pos/10));
 }
 
 static void cmd_get_servo_speed(char *cmd)
 {
-  uart0_printf("G%d M6 S%.2f\r\n",device_id,g_servo_info.cur_speed);
+  uart0_printf("G%d M6 S%.2f\r\n",device_id,(float)g_servo_info.cur_speed);
 }
 
 static void cmd_get_servo_temperature(char *cmd)
 {
-  uart0_printf("G%d M7 T%.2f\r\n",device_id,g_servo_info.temperature);
+  uart0_printf("G%d M7 T%.2f\r\n",device_id,(float)g_servo_info.temperature);
 }
 
 static void cmd_get_servo_current(char *cmd)
 {
-  uart0_printf("G%d M8 I%.2f\r\n",device_id,g_servo_info.current);
+  uart0_printf("G%d M8 I%.2f\r\n",device_id,(float)g_servo_info.current);
 }
 
 static void cmd_get_servo_voltage(char *cmd)
 {
-  uart0_printf("G%d M9 V%.2f\r\n",device_id,g_servo_info.voltage/1000);
+  uart0_printf("G%d M9 V%.2f\r\n",device_id,(float)(g_servo_info.voltage/1000.0));
 }
 
 static void cmd_get_servo_angle(char *cmd)
 {
-  uart0_printf("G%d M36 A%ld\r\n",device_id,round((g_servo_info.cur_pos/10.0 * 360.0)/4096.0));
+  uart0_printf("G%d M36 A%ld\r\n",device_id,(int32_t)(round((g_servo_info.cur_pos/10.0 * 360.0)/4096.0)));
 }
 
 static void   cmd_back_zero(char *cmd)
@@ -1815,3 +1842,45 @@ static uint8_t check_sysex_message(void)
     return false;
   }
 }
+
+/**
+*@ Description:check whether smart servo be bootloader state
+* @param null
+* @param null
+* @return success: 1, fail: 0
+*/
+void check_device_state(void *arg)
+{
+  volatile uint8_t checksum;
+	
+  //response mesaage to UART0
+  write_byte_uart0(START_SYSEX);
+  write_byte_uart0(device_id);
+	write_byte_uart0(CTL_GENERAL);
+  write_byte_uart0(CTL_CHECK_DEVICE_STATE);
+  write_byte_uart0(0x00);
+  checksum = (device_id + CTL_GENERAL + CTL_CHECK_DEVICE_STATE + 0x00) & 0x7f;
+  write_byte_uart0(checksum);
+  write_byte_uart0(END_SYSEX);
+}
+
+void check_whether_reach_the_postion(void)
+{
+	uint8_t checksum;
+	uint8_t reach_pos_flag = 1;
+
+	//if(!g_servo_info.reach_tar_pos)
+	{
+	  //response mesaage to UART0
+	  write_byte_uart0(START_SYSEX);
+	  write_byte_uart0(device_id);
+	  write_byte_uart0(SMART_SERVO);
+	  write_byte_uart0(CHECK_WHETHER_REACH_THE_SET_POSITION);
+	  write_byte_uart0((uint8_t)reach_pos_flag);
+	  checksum = (device_id + SMART_SERVO + CHECK_WHETHER_REACH_THE_SET_POSITION+(uint8_t)reach_pos_flag);
+	  checksum = checksum & 0x7f;
+	  write_byte_uart0(checksum);
+	  write_byte_uart0(END_SYSEX);
+	}
+}
+

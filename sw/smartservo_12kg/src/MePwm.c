@@ -13,6 +13,7 @@ void pwm_writeMicroseconds(int pin,int value);
 //PWM占空比 = (CMR0+1) / (CNR0 + 1)
 void pwm_init(int pin,int fq)
 {
+	static boolean first_run = TRUE;
 	int max_cnt;
 	
 	fq_tab[pin-0x20] = fq;
@@ -20,11 +21,17 @@ void pwm_init(int pin,int fq)
 	s_max_cnt[pin-0x20] = SystemCoreClock/2/fq;//prescaler 2
 	max_cnt = s_max_cnt[pin-0x20];
 
-	pwm_writeMicroseconds(pin, 0);//Set PWM Duty 0
+	if(first_run == TRUE)
+	{
+		first_run = FALSE;
+		CLK->CLKSEL1 &= CLK_CLKSEL1_PWM01_S_HCLK;	
+		CLK->CLKSEL2 &= CLK_CLKSEL2_PWM45_S_HCLK;
+	}
+
 	switch(pin)
 	{
 		case 0x20:
-			CLK->CLKSEL1 &= CLK_CLKSEL1_PWM01_S_HCLK;			 //select the 50MHz HCLK clock as source
+			CLK->CLKSEL1 |= CLK_CLKSEL1_PWM01_S_HCLK;			 //select the 50MHz HCLK clock as source
 			CLK->APBCLK |= CLK_APBCLK_PWM01_EN_Msk; 			 //enable the clock
 			PWMA->PCR |= PWM_PCR_CH0MOD_Msk;							 //auto reload
 			PWM_SET_PRESCALER(PWMA,PWM_CH0,1); 					 //prescaler 2
@@ -36,7 +43,7 @@ void pwm_init(int pin,int fq)
 			break;
 
 		case 0x21:
-			CLK->CLKSEL1 &= CLK_CLKSEL1_PWM01_S_HCLK;			 //select the 50MHz HCLK clock as source
+			CLK->CLKSEL1 |= CLK_CLKSEL1_PWM01_S_HCLK;			 //select the 50MHz HCLK clock as source
 			CLK->APBCLK |= CLK_APBCLK_PWM01_EN_Msk; 			 //enable the clock
 			PWMA->PCR |= PWM_PCR_CH1MOD_Msk;							 //auto reload
 			PWM_SET_PRESCALER(PWMA,PWM_CH1,1); 					 //prescaler 2
@@ -48,7 +55,7 @@ void pwm_init(int pin,int fq)
 			break;
 
 		case 0x22:
-			CLK->CLKSEL1 &= CLK_CLKSEL1_PWM23_S_HCLK;			 //select the 50MHz HCLK clock as source
+			CLK->CLKSEL1 |= CLK_CLKSEL1_PWM23_S_HCLK;			 //select the 50MHz HCLK clock as source
 			CLK->APBCLK |= CLK_APBCLK_PWM23_EN_Msk; 			 //enable the clock
 			PWMA->PCR |= PWM_PCR_CH2MOD_Msk;							 //auto reload
 			PWM_SET_PRESCALER(PWMA,PWM_CH2,1); 					 //prescaler 2
@@ -60,7 +67,7 @@ void pwm_init(int pin,int fq)
 			break;
 
 		case 0x23:
-			CLK->CLKSEL1 &= CLK_CLKSEL1_PWM23_S_HCLK;			 //select the 50MHz HCLK clock as source
+			CLK->CLKSEL1 |= CLK_CLKSEL1_PWM23_S_HCLK;			 //select the 50MHz HCLK clock as source
 			CLK->APBCLK |= CLK_APBCLK_PWM23_EN_Msk; 			 //enable the clock
 			PWMA->PCR |= PWM_PCR_CH3MOD_Msk;							 //auto reload
 			PWM_SET_PRESCALER(PWMA,PWM_CH3,1); 					 //prescaler 2
@@ -72,7 +79,7 @@ void pwm_init(int pin,int fq)
 			break;
 
 		case 0x24:
-			CLK->CLKSEL2 &= CLK_CLKSEL2_PWM45_S_HCLK;			 //select the 50MHz HCLK clock as source
+			CLK->CLKSEL2 |= CLK_CLKSEL2_PWM45_S_HCLK;			 //select the 50MHz HCLK clock as source
 			CLK->APBCLK |= CLK_APBCLK_PWM45_EN_Msk; 			 //enable the clock
 			PWMB->PCR |= PWM_PCR_CH0MOD_Msk;							 //auto reload
 			PWM_SET_PRESCALER(PWMB,PWM_CH0,1); 					 //prescaler 2
@@ -84,7 +91,7 @@ void pwm_init(int pin,int fq)
 			break;
 
 		case 0x25:
-			CLK->CLKSEL2 &= CLK_CLKSEL2_PWM45_S_HCLK;			 //select the 50MHz HCLK clock as source
+			CLK->CLKSEL2 |= CLK_CLKSEL2_PWM45_S_HCLK;			 //select the 50MHz HCLK clock as source
 			CLK->APBCLK |= CLK_APBCLK_PWM45_EN_Msk; 			 //enable the clock
 			PWMB->PCR |= PWM_PCR_CH1MOD_Msk;							 //auto reload
 			PWM_SET_PRESCALER(PWMB,PWM_CH1,1); 					 //prescaler 2
@@ -96,7 +103,7 @@ void pwm_init(int pin,int fq)
 			break;
 
 		case 0x26:
-			CLK->CLKSEL2 &= CLK_CLKSEL2_PWM67_S_HCLK;			 //select the 50MHz HCLK clock as source
+			CLK->CLKSEL2 |= CLK_CLKSEL2_PWM67_S_HCLK;			 //select the 50MHz HCLK clock as source
 			CLK->APBCLK |= CLK_APBCLK_PWM67_EN_Msk; 			 //enable the clock
 			PWMB->PCR |= PWM_PCR_CH2MOD_Msk;							 //auto reload
 			PWM_SET_PRESCALER(PWMB,PWM_CH2,1); 					 //prescaler 2
@@ -175,42 +182,114 @@ void pwm_write(int pin, int value,int min,int max)
 	pwm_writeMicroseconds(pin,value_tmp);
 }
 
-void pwm_canceled(int pin)
+void pwm_canceled(int pin, uint8_t state)
 {
   pw_ctl_tab[pin-0x20] = FALSE;
   switch(pin)
   {
     case 0x20:
-      PWMA->POE &= ~PWM_POE_PWM0_Msk;                 //Disable PWM Output
-      PWMA->PCR &= ~PWM_PCR_CH0EN_Msk;
+    	if(state == 0)
+    	{
+	      PWMA->POE &= ~PWM_POE_PWM0_Msk;                 //Disable PWM Output
+	      PWMA->PCR &= ~PWM_PCR_CH0EN_Msk;
+	      //digitalWrite(pin,0);
+      }
+      else
+      {
+	      PWMA->POE |= PWM_POE_PWM0_Msk;                 //Enable PWM Output
+	      PWMA->PCR |= PWM_PCR_CH0EN_Msk;
+      }
       break;
     case 0x21:
-      PWMA->POE &= ~PWM_POE_PWM1_Msk;                 //Disable PWM Output
-      PWMA->PCR &= ~PWM_PCR_CH1EN_Msk;
+      if(state == 0)
+    	{
+	      PWMA->POE &= ~PWM_POE_PWM1_Msk;                 //Disable PWM Output
+	      PWMA->PCR &= ~PWM_PCR_CH1EN_Msk;
+	      //digitalWrite(pin,0);
+      }
+      else
+      {
+	      PWMA->POE |= PWM_POE_PWM1_Msk;                 //Enable PWM Output
+	      PWMA->PCR |= PWM_PCR_CH1EN_Msk;
+      }
       break;
     case 0x22:
-      PWMA->POE &= ~PWM_POE_PWM2_Msk;                 //Disable PWM Output
-      PWMA->PCR &= ~PWM_PCR_CH2EN_Msk;
+      if(state == 0)
+    	{
+	      PWMA->POE &= ~PWM_POE_PWM2_Msk;                 //Disable PWM Output
+	      PWMA->PCR &= ~PWM_PCR_CH2EN_Msk;
+	      //digitalWrite(pin,0);
+      }
+      else
+      {
+	      PWMA->POE |= PWM_POE_PWM2_Msk;                 //Enable PWM Output
+	      PWMA->PCR |= PWM_PCR_CH2EN_Msk;
+      }
       break;
     case 0x23:
-      PWMA->POE &= ~PWM_POE_PWM3_Msk;                 //Disable PWM Output
-      PWMA->PCR &= ~PWM_PCR_CH3EN_Msk;
+      if(state == 0)
+    	{
+	      PWMA->POE &= ~PWM_POE_PWM3_Msk;                 //Disable PWM Output
+	      PWMA->PCR &= ~PWM_PCR_CH3EN_Msk;
+	      //digitalWrite(pin,0);
+      }
+      else
+      {
+	      PWMA->POE |= PWM_POE_PWM3_Msk;                 //Enable PWM Output
+	      PWMA->PCR |= PWM_PCR_CH3EN_Msk;
+      }
       break;
     case 0x24:
-      PWMB->POE &= ~PWM_POE_PWM0_Msk;                 //Disable PWM Output
-      PWMB->PCR &= ~PWM_PCR_CH0EN_Msk;
+      if(state == 0)
+    	{
+	      PWMB->POE &= ~PWM_POE_PWM0_Msk;                 //Disable PWM Output
+	      PWMB->PCR &= ~PWM_PCR_CH0EN_Msk;
+	      //digitalWrite(pin,0);
+      }
+      else
+      {
+	      PWMB->POE |= PWM_POE_PWM0_Msk;                 //Enable PWM Output
+	      PWMB->PCR |= PWM_PCR_CH0EN_Msk;
+      }
       break;
     case 0x25:
-      PWMB->POE &= ~PWM_POE_PWM1_Msk;                 //Disable PWM Output
-      PWMB->PCR &= ~PWM_PCR_CH1EN_Msk;
+      if(state == 0)
+    	{
+	      PWMB->POE &= ~PWM_POE_PWM1_Msk;                 //Disable PWM Output
+	      PWMB->PCR &= ~PWM_PCR_CH1EN_Msk;
+	      //digitalWrite(pin,0);
+      }
+      else
+      {
+	      PWMB->POE |= PWM_POE_PWM1_Msk;                 //Enable PWM Output
+	      PWMB->PCR |= PWM_PCR_CH1EN_Msk;
+      }
       break;
     case 0x26:
-      PWMB->POE &= ~PWM_POE_PWM2_Msk;                 //Disable PWM Output
-      PWMB->PCR &= ~PWM_PCR_CH2EN_Msk;
+      if(state == 0)
+    	{
+	      PWMB->POE &= ~PWM_POE_PWM2_Msk;                 //Disable PWM Output
+	      PWMB->PCR &= ~PWM_PCR_CH2EN_Msk;
+	      //digitalWrite(pin,0);
+      }
+      else
+      {
+	      PWMB->POE |= PWM_POE_PWM2_Msk;                 //Enable PWM Output
+	      PWMB->PCR |= PWM_PCR_CH2EN_Msk;
+      }
       break;
     case 0x27:
-      PWMB->POE &= ~PWM_POE_PWM3_Msk;                 //Disable PWM Output
-      PWMB->PCR &= ~PWM_PCR_CH3EN_Msk;
+      if(state == 0)
+    	{
+	      PWMB->POE &= ~PWM_POE_PWM3_Msk;                 //Disable PWM Output
+	      PWMB->PCR &= ~PWM_PCR_CH3EN_Msk;
+	      //digitalWrite(pin,0);
+      }
+      else
+      {
+	      PWMB->POE |= PWM_POE_PWM3_Msk;                 //Enable PWM Output
+	      PWMB->PCR |= PWM_PCR_CH3EN_Msk;
+      }
       break;
   }
 }

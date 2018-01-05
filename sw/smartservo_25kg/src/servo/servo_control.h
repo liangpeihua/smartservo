@@ -6,7 +6,7 @@
  * @brief   
  *
  * \par Description
- * This file is servo control algorithm.
+ * This file is servo motion control algorithm.
  *
  * \par History:
  * <pre>

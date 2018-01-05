@@ -191,6 +191,8 @@ void USART_RecvPackage(uint8_t data)
 {
 #if SUPPORT_MY_DEBUG
 	extern STRUCT_PID speed_ctrl;
+	extern STRUCT_PID torque_ctrl;
+	
 	CAN_msg *prxmsg;
 	if(USART_RecFrame(data, &g_ucCOMRxBuf[0], &g_ucRXLen) == true)
 	{ 
@@ -204,7 +206,8 @@ void USART_RecvPackage(uint8_t data)
 				break;
 			
 			case 0x00660012:
-
+				torque_ctrl.Kp = prxmsg->data[0];
+				torque_ctrl.Ki = prxmsg->data[1];
 				break;
 
 			case 0x0066000F:
@@ -229,6 +232,7 @@ void USART_SendPackage(void)
 #if SUPPORT_MY_DEBUG
 	extern STRUCT_PID speed_ctrl;
 	extern STRUCT_PID pos_ctrl;
+  extern STRUCT_PID torque_ctrl;
 	extern int32_t s_output_pwm;
 	extern int32_t target_speed;
 	extern float NTC;
@@ -236,10 +240,10 @@ void USART_SendPackage(void)
 	extern int32_t set_current;
 	extern int16_t s_driver_pwm;
 	uint8_t buff[8] = {0};
-	static uint32_t count = 0;
+	static int32_t count = -1000;
 
 	count++;
-	if(count < 10)
+	if(count < 30)
 	{
 		return;
 	}
@@ -253,11 +257,25 @@ void USART_SendPackage(void)
 	COMSendBuffer(0x00660001, buff, 8);
 
 	//detect
-//	*(int16_t*)&buff[0] = g_servo_info.voltage;
-//	*(int16_t*)&buff[2] = g_servo_info.current;
-//	*(int16_t*)&buff[4] = g_servo_info.temperature;
-//	*(int16_t*)&buff[6] = g_servo_info.limit_current;
-//	COMSendBuffer(0x00660002, buff, 8);
+	*(int16_t*)&buff[0] = g_servo_info.voltage;
+	*(int16_t*)&buff[2] = g_servo_info.current;
+	*(int16_t*)&buff[4] = g_servo_info.temperature;
+	*(int16_t*)&buff[6] = g_servo_info.over_current_Threshold;
+	COMSendBuffer(0x00660002, buff, 8);
+
+	//torque
+	*(int16_t*)&buff[0] = g_servo_info.current;
+	*(int16_t*)&buff[2] = g_servo_info.tar_torque*4;
+	*(int16_t*)&buff[4] = 0;
+	*(int16_t*)&buff[6] = 0;
+	COMSendBuffer(0x00660003, buff, 8);
+
+	//pwm
+	*(int16_t*)&buff[0] = pos_ctrl.output;
+	*(int16_t*)&buff[2] = speed_ctrl.output;
+	*(int16_t*)&buff[4] = torque_ctrl.output;
+	*(int16_t*)&buff[6] = s_driver_pwm;//g_servo_info.limit_pwm; g_servo_info.errorid ;//
+	COMSendBuffer(0x00660004, buff, 8);
 
 #endif
 }

@@ -134,12 +134,6 @@ static void Uart0_Handle(void)
         Uart0RevRtail = 0;
         Uart0Revhead = 0;
       }
-
-      //add for test
-      {
-      	extern void USART_RecvPackage(uint8_t data);
-				USART_RecvPackage(inputData);
-      }
     }
   }
 }
